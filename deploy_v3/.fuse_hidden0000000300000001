@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!--OG_HEAD-->
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 820"><g fill="none" stroke="black" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M75,38 Q165,330 465,302"/><path d="M525,38 Q435,330 135,302"/><circle cx="300" cy="352" r="212"/><path d="M300,148 L162,508 M300,148 L438,508 M167,508 L433,508"/><rect x="213" y="338" width="174" height="172" rx="4"/><circle cx="300" cy="424" r="74" fill="black" stroke="none"/><circle cx="283" cy="398" r="27" fill="white" stroke="none"/><path d="M300,564 L300,752"/><path d="M138,648 L462,648"/><path d="M118,768 Q218,652 298,756"/><path d="M482,768 Q382,652 302,756"/></g></svg>'>
+<style>
+:root{
+  --paper:#f2ecdd;--paper2:#eae2cd;--ink:#171310;--ink-soft:#4a4136;
+  --rule:#c9bfa6;--teal:#15807c;--teal-deep:#0c5a57;--red:#8c2a1e;
+  --serif:'Cormorant Garamond',Georgia,'Times New Roman',serif;--mono:'Space Mono','Courier New',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:19px;line-height:1.55;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(rgba(23,19,16,.05) .5px,transparent .6px),linear-gradient(rgba(23,19,16,.018) 1px,transparent 1px);background-size:9px 9px,100% 34px;}
+a{color:inherit}
+img{max-width:100%;display:block}
+.mono{font-family:var(--mono);letter-spacing:.14em;font-size:12px;text-transform:uppercase}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+header{position:sticky;top:0;z-index:50;background:rgba(242,236,221,.92);backdrop-filter:blur(6px);border-bottom:2px solid var(--ink)}
+.hbar{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;max-width:1240px;margin:0 auto}
+.brand{display:flex;gap:12px;align-items:center;text-decoration:none}
+.brand svg{height:44px;width:auto}
+.brand .bt{display:flex;flex-direction:column;line-height:1.1}
+.brand .bt b{font-size:21px;letter-spacing:.28em;font-weight:600}
+.brand .bt span{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;color:var(--ink-soft)}
+nav{display:flex;gap:2px;flex-wrap:wrap}
+nav a{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;padding:7px 9px;border:1.5px solid transparent}
+nav a.on{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+nav a:hover{border-color:var(--ink)}
+@media(max-width:980px){.hbar{flex-direction:column;gap:8px}nav a{padding:6px 7px}}
+.hero{padding:72px 0 56px;border-bottom:2px solid var(--ink)}
+.hero .wrap{display:grid;grid-template-columns:1.25fr .75fr;gap:48px;align-items:center}
+@media(max-width:820px){.hero .wrap{grid-template-columns:1fr}.hero-sigil{order:-1;max-width:240px;margin:0 auto}}
+.kick{font-family:var(--mono);font-size:12px;letter-spacing:.3em;color:var(--teal-deep);margin-bottom:18px}
+h1.big{font-size:clamp(56px,9vw,108px);font-weight:600;letter-spacing:.06em;line-height:.95}
+.hero p.lede{margin-top:22px;font-size:22px;max-width:34em;color:var(--ink-soft)}
+.hero p.lede em{color:var(--ink)}
+.btnrow{display:flex;gap:12px;margin-top:30px;flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:12px;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;padding:13px 22px;border:2px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:hover{background:var(--teal-deep);border-color:var(--teal-deep);color:var(--paper)}
+.hero-sigil svg{width:100%;max-width:330px;margin:0 auto;display:block}
+.sigil-anim{animation:breathe 7s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
+section.band{padding:64px 0;border-bottom:1.5px solid var(--rule)}
+.sec-label{display:flex;align-items:center;gap:14px;margin-bottom:34px}
+.sec-label .mono{color:var(--teal-deep)}
+.sec-label:after{content:"";flex:1;height:1.5px;background:var(--ink)}
+h2.sec{font-size:clamp(34px,4.5vw,52px);font-weight:600;margin-bottom:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+.card{border:2px solid var(--ink);background:var(--paper);padding:24px 26px;text-decoration:none;display:block;position:relative;transition:transform .12s,box-shadow .12s}
+.card:hover{transform:translate(-3px,-3px);box-shadow:6px 6px 0 var(--ink)}
+.card .mono{color:var(--teal-deep);margin-bottom:8px}
+.card h3{font-size:30px;font-weight:600;margin-bottom:8px}
+.card p{color:var(--ink-soft);font-size:17.5px}
+.card .cw{color:var(--red)}
+.ggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:18px}
+.gcard{border:2px solid var(--ink);text-decoration:none;background:#fff;transition:transform .12s,box-shadow .12s;display:flex;flex-direction:column}
+.gcard:hover{transform:translate(-3px,-3px);box-shadow:6px 6px 0 var(--ink)}
+.gcard .im{aspect-ratio:1/1;overflow:hidden;background:#fff;display:flex;align-items:center;justify-content:center;border-bottom:2px solid var(--ink)}
+.gcard img{width:100%;height:100%;object-fit:cover;filter:contrast(1.02)}
+.gcard .meta{padding:10px 12px 12px;background:var(--paper)}
+.gcard .meta .mono{font-size:9.5px;color:var(--teal-deep)}
+.gcard .meta b{font-size:18px;font-weight:600;display:block;margin-top:2px;line-height:1.2}
+.cathead{display:flex;align-items:baseline;gap:14px;margin:46px 0 18px}
+.cathead h3{font-size:30px;font-weight:600}
+.cathead .mono{color:var(--ink-soft)}
+.cathead:after{content:"";flex:1;height:1.5px;background:var(--rule);align-self:center}
+.artpage{display:grid;grid-template-columns:1.15fr .85fr;gap:44px;align-items:start}
+@media(max-width:860px){.artpage{grid-template-columns:1fr}}
+.artframe{border:2px solid var(--ink);background:#fff;padding:14px;box-shadow:8px 8px 0 rgba(23,19,16,.14)}
+.artframe img{width:100%;height:auto}
+.spec{border:2px solid var(--ink)}
+.spec dt{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--paper);background:var(--ink);padding:6px 12px}
+.spec dd{padding:10px 12px 14px;border-bottom:1.5px solid var(--rule);font-size:17.5px}
+.spec dd:last-child{border-bottom:none}
+.pn{display:flex;justify-content:space-between;gap:10px;margin-top:26px}
+.bookhead{border:2px solid var(--ink);padding:38px 34px;margin-bottom:30px;background:linear-gradient(transparent 96%,rgba(23,19,16,.06) 100%)}
+.bookhead h2{font-size:clamp(38px,6vw,64px);line-height:1}
+.warn{border:2px solid var(--red);color:var(--red);padding:14px 18px;margin:18px 0;font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase}
+.prose{max-width:46em;font-size:20px}.prose p{margin-bottom:1em}.prose h3{font-size:26px;margin:1.4em 0 .5em}
+.gate{border:2.5px solid var(--red);padding:34px;text-align:center;background:repeating-linear-gradient(-45deg,transparent 0 14px,rgba(140,42,30,.05) 14px 28px)}
+.gate h3{font-size:30px;color:var(--red)}
+.gate p{color:var(--ink-soft);max-width:34em;margin:10px auto 18px}
+.gate button{font-family:var(--mono);font-size:12px;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;padding:13px 22px;border:2px solid var(--red);background:var(--red);color:var(--paper)}
+.gate button.no{background:transparent;color:var(--red)}
+/* share */
+.share{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:26px;padding-top:20px;border-top:1.5px solid var(--rule)}
+.share .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-right:4px}
+.share a,.share button{width:40px;height:40px;border:2px solid var(--ink);background:var(--paper);display:flex;align-items:center;justify-content:center;cursor:pointer;text-decoration:none;color:var(--ink);transition:transform .1s,background .1s}
+.share a:hover,.share button:hover{background:var(--ink);color:var(--paper);transform:translateY(-2px)}
+.share svg{width:18px;height:18px;fill:currentColor}
+.copied{font-family:var(--mono);font-size:10.5px;color:var(--teal-deep);text-transform:uppercase;letter-spacing:.1em}
+/* mailing list */
+.ml{border:2px solid var(--ink);background:var(--paper2);padding:30px 30px}
+.ml.compact{margin-top:34px;padding:22px 24px}
+.ml .mono{color:var(--teal-deep);margin-bottom:8px}
+.ml h3{font-size:30px;font-weight:600;margin-bottom:6px}
+.ml p{color:var(--ink-soft);margin-bottom:16px;max-width:40em}
+.mlform{display:flex;gap:10px;flex-wrap:wrap;max-width:520px}
+.mlform input{flex:1;min-width:200px;font-family:var(--mono);font-size:13px;padding:13px 14px;border:2px solid var(--ink);background:var(--paper)}
+.mlform input:focus{outline:none;border-color:var(--teal-deep)}
+.mlmsg{margin-top:10px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.mlmsg.ok{color:var(--teal-deep)}.mlmsg.err{color:var(--red)}
+/* popup */
+.pop-ov{position:fixed;inset:0;background:rgba(23,19,16,.55);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;animation:fade .25s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.pop{background:var(--paper);border:2.5px solid var(--ink);max-width:460px;width:100%;padding:34px 32px 30px;position:relative;box-shadow:10px 10px 0 rgba(23,19,16,.25)}
+.pop .x{position:absolute;top:10px;right:14px;font-family:var(--mono);font-size:18px;cursor:pointer;background:none;border:none;color:var(--ink-soft)}
+.pop svg{height:54px;display:block;margin:0 auto 14px}
+.pop h3{font-size:30px;font-weight:600;text-align:center;margin-bottom:8px}
+.pop p{color:var(--ink-soft);text-align:center;margin-bottom:18px;font-size:18px}
+.events-empty{border:2px dashed var(--rule);padding:46px 30px;text-align:center;color:var(--ink-soft)}
+.events-empty h3{font-size:34px;color:var(--ink);font-weight:600;margin-bottom:10px}
+.buy{border:2px solid var(--teal-deep);background:var(--paper);padding:18px 20px;margin-top:24px}
+.buy .mono{color:var(--teal-deep);margin-bottom:6px}
+.buy .row{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.buy .price{font-size:26px;font-weight:600}
+.buy .btn{background:var(--teal-deep);border-color:var(--teal-deep)}
+.buy p{color:var(--ink-soft);font-size:16px;margin-top:6px}
+.evt{border:2px solid var(--ink);background:var(--paper);padding:22px 24px;margin-bottom:16px;display:grid;grid-template-columns:140px 1fr;gap:20px}
+@media(max-width:640px){.evt{grid-template-columns:1fr}}
+.evt .when{font-family:var(--mono);font-size:13px;color:var(--teal-deep);letter-spacing:.06em}
+.evt h3{font-size:26px;font-weight:600}
+.evt .where{color:var(--ink-soft);font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;margin:4px 0 8px}
+.evt p{color:var(--ink-soft)}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px}
+.bloglist{display:grid;gap:18px}
+.bpost{border:2px solid var(--ink);background:var(--paper);padding:26px 28px;text-decoration:none;display:block;transition:transform .12s,box-shadow .12s}
+.bpost:hover{transform:translate(-3px,-3px);box-shadow:6px 6px 0 var(--ink)}
+.bpost .mono{color:var(--teal-deep);margin-bottom:6px}
+.bpost h3{font-size:28px;font-weight:600;margin-bottom:6px}
+.bpost p{color:var(--ink-soft)}
+footer{padding:56px 0 80px;text-align:center}
+footer svg{height:74px;margin:0 auto 18px;display:block;opacity:.9}
+footer .mono{color:var(--ink-soft)}
+footer p{margin-top:8px;color:var(--ink-soft);font-size:16px}
+footer a{color:var(--teal-deep)}
+.fade-in{animation:fi .35s ease both}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.notice{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--ink-soft);text-transform:uppercase}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<g id="sigil-core"><g fill="none" stroke="currentColor" stroke-width="34" stroke-linecap="round" stroke-linejoin="round">
+<path d="M75,38 Q165,330 465,302"/><path d="M525,38 Q435,330 135,302"/><circle cx="300" cy="352" r="212"/>
+<path d="M300,148 L162,508"/><path d="M300,148 L438,508"/><path d="M167,508 L433,508"/>
+<rect x="213" y="338" width="174" height="172" rx="4"/><path d="M300,564 L300,752"/><path d="M138,648 L462,648"/>
+<path d="M118,768 Q218,652 298,756"/><path d="M482,768 Q382,652 302,756"/></g>
+<circle cx="300" cy="424" r="74" fill="currentColor"/><circle cx="283" cy="398" r="27" fill="var(--paper)"/></g>
+</defs></svg>
+<header><div class="hbar">
+  <a class="brand" href="/"><svg viewBox="0 0 600 820" aria-label="Dewgrave sigil"><use href="#sigil-core"/></svg>
+    <div class="bt"><b>DEWGRAVE</b><span>C.&amp;C. DEWGRAVE &amp; Co. No. I</span></div></a>
+  <nav id="nav">
+    <a href="/" data-r="">Console</a><a href="/gallery" data-r="gallery">Gallery</a>
+    <a href="/writings" data-r="writings">Writings</a><a href="/prints" data-r="prints">Prints</a>
+    <a href="/blog" data-r="blog">Blog</a><a href="/events" data-r="events">Events</a>
+    <a href="/ken" data-r="ken">KEN</a><a href="/research" data-r="research">Research</a><a href="/author" data-r="author">Author</a>
+    <a href="/contact" data-r="contact">Contact</a>
+  </nav>
+</div></header>
+<main id="app"></main>
+<footer>
+  <svg viewBox="0 0 600 820"><use href="#sigil-core"/></svg>
+  <div class="mono">DEWGRAVE · dewgrave.com</div>
+  <p>An archive of KEN. No rights reserved. Share this work as you Will.</p>
+  <p class="notice">Every document and every art piece in the archive is hosted here, each with its summary.</p>
+  <p>Designed by <a href="https://www.shadowcasterstudios.com" rel="noopener">Shadow Caster Studios</a></p>
+</footer>
+<div id="popup-root"></div>
+<script>
+let ART = [{"slug": "33-leaves", "title": "33 Leaves", "category": "Ritual & Hermetica", "palette": "black ink on white", "summary": "A symmetrical emblem depicting a solid black stepped pyramid viewed in isometric perspective, surmounted by a cross-shaped staff whose four arms terminate in leafy sprays; a radiant halo crowns the top. The composition fuses vegetal abundance with architectural mass — plant life ascending from stone toward light. A precise diagram of the vertical axis: matter below, spirit above, the leafed rod as antenna between worlds.", "nsfw": false, "w": 2000, "h": 3000, "file": "33-leaves"}, {"slug": "alpha-bet", "title": "Alpha Bet", "category": "Language & The Sign", "palette": "black ink with blue and cyan fill on white", "summary": "A large-format lettering exercise rendering the pangram 'The quick brown fox jumps over the lazy dog' in a bold custom display typeface with thick outlines and blue-filled counters; each word is annotated with grammatical labels and the bottom corner reads 'Fig. 1: A Simple Sentence.' The piece treats a sentence as both linguistic specimen and monumental inscription — the alphabet demonstrated, the sentence anatomised, knowing made visible.", "nsfw": false, "w": 3300, "h": 2550, "file": "alpha-bet"}, {"slug": "another-castle", "title": "Another Castle", "category": "Citadels & Confinement", "palette": "black ink on white", "summary": "A frontal fortress elevation with two crenellated towers, flanking pillar rows, and a central gateway; inside the gate a heraldic cross appears on a recessed panel, and below the structure a small boat with a vesica piscis hull floats on a wavy waterline. The castle is simultaneously approachable and closed — the open gate reveals only another emblem rather than passage, transit perpetually deferred.", "nsfw": false, "w": 2000, "h": 3000, "file": "another-castle"}, {"slug": "augmented-lbrp", "title": "Augmented LBRP", "category": "Ritual & Hermetica", "palette": "black ink on white", "summary": "A tall diptych-format sheet presents a vertical column of interlocked ritual symbols — pentagrams in circles, a hexagram, a cross within nested rectangles — with the title 'Lesser Banishing Ritual of the Pentagram' rotated along the left margin and 'Augment Rituals' along the bottom, dense marginal annotations filling the borders. Both diagram and working document, expanding a canonical ceremonial-magic procedure into a composite sigil: the ritual as technology of knowledge.", "nsfw": false, "w": 2000, "h": 4000, "file": "augmented-lbrp"}, {"slug": "band-ode", "title": "Band Ode", "category": "Studies & Ephemera", "palette": "black ink on white", "summary": "A square composition entirely filled with a dense, symmetrical geometric tile pattern — concentric circles, cross-hatched diamonds, eye-like ovals, and floral rosettes repeating across a grid with a dotted border. The design reads as textile or bandana pattern, a mandala without a single privileged symbol. The relentless tiling enacts signal saturation: a field where pattern becomes noise and noise becomes pattern.", "nsfw": false, "w": 3600, "h": 3600, "file": "band-ode"}, {"slug": "blast-em", "title": "Blast 'Em", "category": "Language & The Sign", "palette": "black ink on white", "summary": "An energetic drawing combining wildstyle graffiti lettering in the corners with a central isometric cityscape of industrial buildings, chimneys, and coiling pipes; legible fragments include 'Verse,' 'Innovation,' and 'Alternate Zone.' Typography and architecture are treated as the same constructed system — letters that become buildings, buildings that sprout conduits — marks encoding power and territory.", "nsfw": false, "w": 2902, "h": 2595, "file": "blast-em"}, {"slug": "bleakhouse", "title": "Bleakhouse", "category": "Citadels & Confinement", "palette": "black ink on cream paper", "summary": "A densely worked bird's-eye grid of city blocks and urban infrastructure overlaid with large spiralling text that winds around the composition in multiple directions, carrying phrases of bureaucratic entrapment. The title references Dickens's novel of legal labyrinth, and the piece performs that maze formally — text and city plan becoming indistinguishable. Architecture here is document, and document is prison.", "nsfw": false, "w": 5712, "h": 4284, "file": "bleakhouse"}, {"slug": "bloody-bricks", "title": "Bloody Bricks", "category": "Citadels & Confinement", "palette": "black ink and teal marker on sketchbook paper", "summary": "A sketchbook page, spiral binding visible, holds floating architectural vignettes in black ink with vivid teal fills: staircase towers, diamond-roofed turrets, isometric brick structures, small pyramids with lightning-bolt markings. The margins repeat 'LILW EVARGWED' — WILL DEWGRAVE reversed — the name as signature-sigil. A personal atlas of constructed spaces, identity embedded in the brickwork.", "nsfw": false, "w": 4284, "h": 5712, "file": "bloody-bricks"}, {"slug": "brighthouse-side-one", "title": "Brighthouse Side One", "category": "Citadels & Confinement", "palette": "black ink on white paper", "summary": "A large, densely detailed drawing of an impossible, fragmenting brick building — towers, staircases, and facade sections in an Escher-like layout — its margins packed with small symbolic vignettes. The caption reads 'Side One' and repeats 'There is nothing going on' several times: a koan or deflection, signal masquerading as absence.", "nsfw": false, "w": 3024, "h": 4032, "file": "brighthouse-side-one"}, {"slug": "brighthouse-side-two", "title": "Brighthouse Side Two", "category": "Portals & Liminality", "palette": "black ink on white paper", "summary": "Where Side One is dense, this sheet is spare: at centre floats a cross-shaped castle-plan sigil whose arms bear 'WILLDEWGRAVE' forward and reversed, interior cells holding eyes, letters, omega signs, and binary strings; corners read 'SYMBOL '24 SYMBIOTE' and the caption repeats 'Side two… Still nothing going on.' The reversal of the name turns signature into seal — the negative space is the message.", "nsfw": false, "w": 3024, "h": 4032, "file": "brighthouse-side-two"}, {"slug": "candle-majik", "title": "Candle Majik", "category": "Ritual & Hermetica", "palette": "black ink on white", "summary": "A dense, shield-shaped emblem: an outer ring of Celtic knotwork and gear-like bosses frames a central triangle enclosing a triquetra from which three stylised serpents emerge; below hangs a panel of runic sigil characters. Every element interlocks — amulet and engine at once. Celtic, alchemical, and mechanical vocabularies converge: the sacred and the structural as one system described differently.", "nsfw": false, "w": 2150, "h": 2150, "file": "candle-majik"}, {"slug": "carceral", "title": "Carceral", "category": "Citadels & Confinement", "palette": "black ink on white", "summary": "An isometric composition of a massive cross-shaped complex of interlocking brick towers and bastions — four rectangular prisms radiating from a central void, surfaces tessellated with obsessive brick texture. No doors, no windows, no figures: the structure exists purely as enclosure. The title names the condition; the drawing enacts it — an architecture of total containment with no implied exterior.", "nsfw": false, "w": 4000, "h": 6000, "file": "carceral"}, {"slug": "citadel-twelve", "title": "Citadel Twelve", "category": "Citadels & Confinement", "palette": "black and grey ink on white", "summary": "A precise overhead plan of a square fortress with a central Greek-cross axis bisecting four quadrants of towers and arrow-slit windows, diagonals meeting the cross at centre, a brick border framing the whole. Strict fourfold symmetry gives it the quality of mandala or circuit diagram as much as military plan — the citadel as cosmogram, territory organised around an absolute centre.", "nsfw": false, "w": 5983, "h": 5997, "file": "citadel-twelve"}, {"slug": "conquer", "title": "Conquer", "category": "Language & The Sign", "palette": "black ink on cream paper", "summary": "A sheet photographed with a ruler at its base shows a massive block-letter construction in thick isometric perspective with hatched shading, topped by a small castle element; 'KONKRETE' appears above and 'DEW' in the lower right. The letterform is treated as architecture — a word with load-bearing walls that casts shadows — a studio note from the artist's personal lexicon.", "nsfw": false, "w": 3024, "h": 4032, "file": "conquer"}, {"slug": "constrained", "title": "Constrained", "category": "Growth & Nature", "palette": "white ink on black", "summary": "A white-on-black drawing of two elements in tension: an angular, thorned plant growing from a pot, its branches geometrically rigid, beside an ascending isometric staircase with a framed window at the top; the bottom reads '…DEWGRAVE…'. Organic growth against architectural constraint, with the inversion of figure and ground marking the threshold state — the background made subject.", "nsfw": false, "w": 2000, "h": 3000, "file": "constrained"}, {"slug": "crenels", "title": "Crenels", "category": "Citadels & Confinement", "palette": "black ink on white, framed", "summary": "A framed, large-format drawing of a repeating grid of fortress units — each cell crenellated towers and battlements linked by walls — filling the plane edge to edge, with 'GRAVE' and its mirror 'EYARG' legible in a central band. The grid refuses hierarchy: every cell equally fortified, equally enclosed. The reversed text enacts the reflection principle — the name encoded in the wall.", "nsfw": false, "w": 4284, "h": 5712, "file": "crenels"}, {"slug": "cyclical-growth", "title": "Cyclical Growth", "category": "Growth & Nature", "palette": "black ink on white", "summary": "A vertical composition placing an elaborate flowering plant — blossoms mechanical-looking with circular centres, stem wound with spirals and thorns, roots splaying into tendrils — beside a receding brick staircase into which the plant leans. Growth rendered as recursive, almost clockwork process: the staircase of matter beside the ascending spiral of living form, as above so below.", "nsfw": false, "w": 2000, "h": 3000, "file": "cyclical-growth"}, {"slug": "dunsinane", "title": "Dunsinane", "category": "Portals & Liminality", "palette": "black ink on white", "summary": "A bold diagram enclosing a complete scene within a faceted polygon pierced by two opposing arrows, one up, one down; inside are pyramids beneath storm clouds, a church with a gravestone reading 'XIV–XX MALCOLM,' a bare tree with a skull, roses, and a stream that exits the polygon into spray. The arrows invoke vertical correspondence directly, while Macbeth's last castle lends the charge of inevitable threshold-crossing.", "nsfw": false, "w": 1130, "h": 1400, "file": "dunsinane"}, {"slug": "elliptical-growth", "title": "Elliptical Growth", "category": "Growth & Nature", "palette": "black ink on white", "summary": "A thorned vine erupts from the base of a stippled brick wall, rising to a drooping flower head with solid black seeds weeping teardrop forms; roots tangle through the lower courses of masonry. A figure of vital, ungovernable growth breaching constructed barriers — matter finding its way through stone.", "nsfw": false, "w": 1000, "h": 1500, "file": "elliptical-growth"}, {"slug": "emordnilap", "title": "Emordnilap", "category": "Language & The Sign", "palette": "black ink on white", "summary": "A dense, symmetrical composition built around a large central letterform resembling a stylised gate, packed with invented glyphs and geometric ornament radiating into dot-patterns and decorative borders. The title — 'palindrome' reversed — primes the eye to read the image as reversible, an encoded mirror-text: the sign as carrier of hidden, inverted knowledge.", "nsfw": false, "w": 2400, "h": 1800, "file": "emordnilap"}, {"slug": "enochian-summoning-ritual", "title": "Enochian Summoning Ritual", "category": "Ritual & Hermetica", "palette": "white linework on black", "summary": "White-on-black illustration of two skeletal hands bearing sigil-engraved rings, one holding a single sunflower, both gesturing toward a ritual table set with a scrying board, geometric diagrams, and a dark sphere; the borders carry Enochian-style glyphs, triangles, and eye symbols. An invocation image in the Dee-and-Kelley lineage, placing organic life in dialogue with the machinery of the rite.", "nsfw": false, "w": 2000, "h": 4000, "file": "enochian-summoning-ritual"}, {"slug": "erudite-tradition", "title": "Erudite Tradition", "category": "Ritual & Hermetica", "palette": "black, white, and cyan", "summary": "A densely layered page of overlapping pentagrams, hexagrams, and interlocking triangles amid dense handwritten annotation and alchemical-style notation (Fe, Pt, Ha), cyan highlighting picking out select geometry from the field of text. A page of arcane scholarship — the archive-as-grimoire, where accumulated notation becomes its own occult object.", "nsfw": false, "w": 5000, "h": 10000, "file": "erudite-tradition"}, {"slug": "flee", "title": "Flee", "category": "Language & The Sign", "palette": "black ink on grey-white paper", "summary": "A formal grid-like page: a row of omega-shaped eye-glyphs along the top, an inverted row along the bottom, and a central panel containing a sun-circle mandala; 'ESCAPE' and 'APE' are printed boldly in the margins, with 'Constr. by C.&C. DEWGRAVE & Co.' notations visible. Anagram and fragment frame the piece as a linguistic puzzle about containment and its undoing.", "nsfw": false, "w": 3024, "h": 4032, "file": "flee"}, {"slug": "future-church", "title": "Future Church", "category": "Citadels & Confinement", "palette": "black ink on white", "summary": "A tall, symmetrical composition: a twin-towered Gothic-inflected building at centre, flanked by pines, UFO-like craft with beam-rays, winged figures, and killer whales in flanking waters, a ringed cosmos arching overhead; the spire terminates in a clockwork medallion dropping rain. Sacred architecture within a cosmological frame — ecclesiastical, extraterrestrial, and natural fused into a speculative theology.", "nsfw": false, "w": 1500, "h": 3000, "file": "future-church"}, {"slug": "homekoming", "title": "Homekoming", "category": "Citadels & Confinement", "palette": "black ink and teal wash on cream paper", "summary": "A symmetrical citadel-complex in converging perspective: tall flanking towers with arched windows, a central gabled structure set in rising water with sailboats, sharks, and small figures, a radiant figure at the apex; clouds, skulls, and birds populate the upper register. The deliberately misspelled title makes a yearning image of return uncanny — the architecture of belonging.", "nsfw": false, "w": 1179, "h": 2096, "file": "homekoming"}, {"slug": "ident", "title": "Ident", "category": "Language & The Sign", "palette": "black, white, and teal", "summary": "A square graphic structured as a brand identity card: a large omega-like form encircles the words 'NOTHING GOING ON THERE' in stylised lettering, with 'DEWGRAVE' and construction credits printed beneath on a teal-patterned border. The piece knowingly performs the logic of the logo — a sign announcing itself as signal while its text insists there is nothing to see.", "nsfw": false, "w": 1250, "h": 1250, "file": "ident"}, {"slug": "identity-vine", "title": "Identity Vine", "category": "Growth & Nature", "palette": "black ink on white", "summary": "A tall composition in vertical registers: an industrial roofscape with chimneys at top, a mid-section where skeletal or masked figures are entangled in looping vine growth, and two ornate circular medallions at the base holding cross-and-candle arrangements. The vine is connective tissue between industry, figure, and emblem — identity as something that grows around and through structures.", "nsfw": false, "w": 1440, "h": 2880, "file": "identity-vine"}, {"slug": "impossible-stair", "title": "Impossible Stair", "category": "Citadels & Confinement", "palette": "black ink on white", "summary": "A careful isometric drawing of a large brick structure whose stairways and terraces loop back on themselves in a Penrose configuration, ascent and descent resolving into a closed circuit, the brickwork cross-hatched throughout. Confinement made literal — a building whose geometry forecloses exit, a monument to circular reasoning.", "nsfw": false, "w": 3000, "h": 6000, "file": "impossible-stair"}, {"slug": "impregnable", "title": "Impregnable", "category": "Citadels & Confinement", "palette": "black, white, and cyan", "summary": "A perfectly symmetrical mandala-format drawing with flat cyan fills, built around an eight-pointed star — interlocking triangles suggesting a Seal of Solomon — surrounded by quadrant panels of gridded facades, circular mechanical elements, and foliate motifs. The title declares impermeability; the piece enacts it through total geometric closure. Hermetic containment as aesthetic principle.", "nsfw": false, "w": 7500, "h": 7500, "file": "impregnable"}, {"slug": "invert-reason", "title": "Invert Reason", "category": "Portals & Liminality", "palette": "black ink on white", "summary": "A tall impossible landscape: a blocky modernist complex juts at an inverted diagonal from a cliff face, simultaneously above and below itself, windows opening onto nothing, trees growing downward, a small naturalistic scene at the base. The built world tipped against its own logic — a visual analogue of the principle of polarity, above and below exchanged.", "nsfw": false, "w": 2160, "h": 4320, "file": "invert-reason"}, {"slug": "jothic", "title": "Jothic", "category": "Language & The Sign", "palette": "black ink on cream sketchbook", "summary": "An open sketchbook spread filled edge-to-edge with large, elaborately rendered block lettering in a custom blackletter-adjacent script the artist calls 'Jothic'; the text begins 'In the beginning there was a word, and that word was it…'. Scripture and type-design collapse into a single act: the Word made letterform, a private scripture in a constructed script.", "nsfw": false, "w": 2160, "h": 1620, "file": "jothic"}, {"slug": "kalligraff", "title": "Kalligraff", "category": "Language & The Sign", "palette": "black ink on white, faint blue notes", "summary": "A sheet covered in a continuous field of large interlocking letterforms — a hybrid of Roman caps and constructed graffiti glyphs, each adorned with serifs and hook-joints so they interlock without clear word-breaks; small blue studio notes sit in the margins. A pure typographic study: language at the threshold where legibility dissolves into pattern, the sign becoming ornament.", "nsfw": false, "w": 4284, "h": 5712, "file": "kalligraff"}, {"slug": "konspyraseas-secret", "title": "Konspyraseas Secret", "category": "Ritual & Hermetica", "palette": "black ink on white", "summary": "A vertically oriented, densely packed composition around a central hexagram with overlaid triangle, ringed by pentagrams, crosses, skulls, winged solar discs, serpents, thorned roses, anchors, and flames at the base, in exact bilateral symmetry. A completed seal: the Western esoteric tradition summoned simultaneously — the archive's most explicit grimoire page.", "nsfw": false, "w": 2100, "h": 3200, "file": "konspyraseas-secret"}, {"slug": "konspyraseas", "title": "Konspyraseas", "category": "Ritual & Hermetica", "palette": "black, white, teal, and cobalt", "summary": "A large horizontal cosmological map: an upper band in bright teal with ankhs, goddesses, and decorative geometry; below, a vast symmetrical field of black-ink glyphs, spirals, and animal forms darkening toward a central bleed, framed in cobalt; runic text runs along the bottom edge. Visionary cartography — a complete symbolic world laid flat.", "nsfw": false, "w": 9990, "h": 6660, "file": "konspyraseas"}, {"slug": "kontourt", "title": "Kontourt", "category": "Citadels & Confinement", "palette": "black ink on sketchbook paper", "summary": "A floating, gravity-defying architectural complex in isometric projection: Gothic spires, checkerboard facades, arched windows, and connecting walkways forming a compound that hangs without ground; flames and reeds are sketched loosely at the lower right. An in-progress citadel with exploratory hatching — and at its margin, the world the citadel refuses to touch.", "nsfw": false, "w": 1440, "h": 1800, "file": "kontourt"}, {"slug": "landscaping", "title": "Landscaping", "category": "Citadels & Confinement", "palette": "black ink on white paper", "summary": "A large angular building complex in loose isometric perspective — severe facades, tall dark window voids — against sketched mountains, flanked by two flower-wheel motifs with faces at their centres, ink-drop forms falling from the structure's base. Margin notes read 'It's incorporating the many diverse elements impeding the art?' and 'Ah, what unholy relics.' The drawing treats itself as a site under construction — an architecture of thought.", "nsfw": false, "w": 2160, "h": 2700, "file": "landscaping"}, {"slug": "liminate", "title": "Liminate", "category": "Portals & Liminality", "palette": "black ink on white", "summary": "An isometric complex of stacked, receding structures — part citadel, part cargo depot — set within a large diagonal wedge; the margins hold a zeppelin, a jellyfish, sharks, a fish skeleton, pines, waves, a rocket, and a small owl-like face. The title, a portmanteau of liminal and illuminate, locates this threshold-world squarely at the boundary between the known and the unknown.", "nsfw": false, "w": 4000, "h": 4000, "file": "liminate"}, {"slug": "luciferian-linguistics", "title": "Luciferian Linguistics", "category": "Language & The Sign", "palette": "black and white, split field", "summary": "A tall piece built entirely from ornate three-dimensional letterforms — legible words include 'SIGNALS,' 'ANARCHY,' and 'BRAIN' — in contrasting halves: solid black with white-outlined letters on the left, white with black-outlined letters on the right, divided by a sharp diagonal; bands of invented script run along the edges. The piece enacts its title: language as a luminous, adversarial force that reveals and destabilises at once.", "nsfw": false, "w": 2000, "h": 3000, "file": "luciferian-linguistics"}, {"slug": "microcosmic", "title": "Microcosmic", "category": "Citadels & Confinement", "palette": "black ink on white", "summary": "A heraldic, symmetrical drawing of a crenellated castle in precise brick detail, flanked by two sailing vessels on a wavy sea with two whales below; atop the battlements a radiant eye-like ornament is beamed upon by a hovering saucer form. An elaborate emblem whose above-and-below axis — sky-intelligence descending onto earthly structure — directly images the axiom at the heart of the archive.", "nsfw": false, "w": 1082, "h": 1381, "file": "microcosmic"}, {"slug": "nelson", "title": "Nelson", "category": "Ritual & Hermetica", "palette": "black ink on white", "summary": "A densely patterned, landscape-format composition with the quality of a woven carpet: a central field of isometric architecture, cross-marks, and geometric hatching enclosed by a zigzag border. The top and bottom carry the repeated phrase 'NOTHIN GOIN ON · NO INCOGNITHON,' the lower strip mirrored — a textual chant embedded in ornament, a protective charm of compressed signal.", "nsfw": false, "w": 6000, "h": 3000, "file": "nelson"}, {"slug": "nurse-tree", "title": "Nurse Tree", "category": "Growth & Nature", "palette": "black ink on white", "summary": "A stark vertical drawing of a bare tree whose roots plunge into a solid black square while two ravens perch on its upper branches, the whole enclosed in a border of intertwined serpentine vines. The black square reads as both earth and void — a seed-box or buried secret — layering ecological and alchemical notions of death sustaining life.", "nsfw": false, "w": 1100, "h": 2200, "file": "nurse-tree"}, {"slug": "ordinance", "title": "Ordinance", "category": "Ritual & Hermetica", "palette": "black, white, and cyan", "summary": "A circular world-in-a-disc: the upper hemisphere shows a raised fist grasping a pinwheel, rain-cloud columns, an arched doorway with a symbolic lock, an open book, and a sunrise; the lower hemisphere is an underground cross-section of gems, a treasure chest, a skull, and a 'DEW' cartouche, signed Will Dewgrave. A personal cosmogram: law and declaration above, buried wealth and knowledge below.", "nsfw": false, "w": 6000, "h": 6000, "file": "ordinance"}, {"slug": "pish-posh", "title": "Pish-Posh", "category": "Citadels & Confinement", "palette": "black ink on white", "summary": "Two residential or institutional buildings in dynamic isometric perspective, their stairways crossing diagonally in an Escher-inflected manner; a sun and clouds sit in the upper right with small figures on the ledges. The overlapping, slightly impossible staircases deny easy passage between levels — architecture as a puzzle of thresholds rather than a legible path.", "nsfw": false, "w": 2400, "h": 3600, "file": "pish-posh"}, {"slug": "playful", "title": "Playful", "category": "Ritual & Hermetica", "palette": "black ink on white", "summary": "A large square composition built from an intricate nested-square mandala: concentric bands of checkerboard, hatching, and grid pattern converging on a central tower form, isometric cube-clusters extending from each corner. A sacred ground-plan or yantra in obsessive architectural detail — a city seen from directly above, or a diagram of mind made spatial.", "nsfw": false, "w": 6000, "h": 6000, "file": "playful"}, {"slug": "poof", "title": "Poof", "category": "Studies & Ephemera", "palette": "black ink on white", "summary": "A bold graphic study divided into four panels by thick diagonals, each panel holding angular, stepped block-forms reminiscent of isometric letters, with cartoon cloud-puffs in three panels. The clouds lend the hard geometry a light, comedic register — structures appearing and disappearing, or drawn purely for the pleasure of the form.", "nsfw": false, "w": 1013, "h": 1035, "file": "poof"}, {"slug": "portalize-pt-one-pour-frame", "title": "Portalize Pt. One: Pour [Frame]", "category": "Portals & Liminality", "palette": "black marker on kraft board", "summary": "A photograph of the reverse of a picture frame — bare backing board and hanging hardware — on which 'There is nothing going on' is hand-lettered repeatedly at various rotations around a large central sigil, with 'DEW' stickers on opposite corners. The unseen structural side of the artwork becomes a site of inscription, collapsing the boundary between the object's interior and exterior.", "nsfw": false, "w": 4284, "h": 5712, "file": "portalize-pt-one-pour-frame"}, {"slug": "portalize-pt-one-pour-front", "title": "Portalize Pt. One: Pour [Front]", "category": "Portals & Liminality", "palette": "black ink on white", "summary": "A dense ink mandala in radial symmetry: four circular lozenge-forms containing gate-like motifs occupy the cardinal axes, connected by heavily hatched corridors and bordered by moth imagery at the margins. A fully realised portal diagram — a threshold one enters by looking rather than moving — echoing ritual cosmograms across traditions.", "nsfw": false, "w": 4284, "h": 5712, "file": "portalize-pt-one-pour-front"}, {"slug": "portalize-pt-one-pour-rear", "title": "Portalize Pt. One: Pour [Rear]", "category": "Portals & Liminality", "palette": "black ink on white", "summary": "The framed artwork turned to show its back: the word 'POUR' in large dimensional lettering occupies the left half, with handwritten notes — materials, dates, provenance — to the right. The deliberate archiving of the reverse makes this a document of the work's threshold between private process and public object.", "nsfw": false, "w": 4284, "h": 5712, "file": "portalize-pt-one-pour-rear"}, {"slug": "portalize-pt-three-eyes-front", "title": "Portalize Pt. Three: Eyes [Front]", "category": "Portals & Liminality", "palette": "black ink on white", "summary": "A large rectangular mandala of concentric border zones — hatching, wave patterns, repeated glyphs — leading inward to a central eight-pointed star within a square, column forms and scroll ornaments extending to the edges. The portal logic of its series companion, but more architectural at its rim and more purely geometric at centre, as though mapping the approach to a shrine.", "nsfw": false, "w": 4284, "h": 5712, "file": "portalize-pt-three-eyes-front"}, {"slug": "affect-shun", "title": "Affect Shun", "category": "Ritual & Hermetica", "palette": "black, white, and cyan", "summary": "Two mirrored skeletal figures face one another in a symmetrical embrace against a cyan brick ground, their bodies densely covered in inscribed text and occult symbols — a hexagram, serpents, sigil marks — with a small circular vessel between them. The bilateral symmetry and symbol-laden figures evoke a ritual of union or binding, rendered in anatomical and esoteric vocabulary.", "nsfw": true, "w": 1440, "h": 1440, "file": "affect-shun"}, {"slug": "musing", "title": "Musing", "category": "Ritual & Hermetica", "palette": "black, white, and cobalt blue", "summary": "A full-length figure with cyan hair stands against a cobalt brick wall, her body covered in an intricate map of drawn symbols, sigils, architectural vignettes, and small text; the words 'ISN'T IT TWISTED THAT THIS… IS HOW MUCH I LOVE YOU' frame the composition. The body as manuscript — a living surface for the accumulation of signs.", "nsfw": true, "w": 2000, "h": 3000, "file": "musing"}, {"slug": "toothless-daymare", "title": "Toothless Daymare", "category": "Studies & Ephemera", "palette": "black, white, pink, and cyan", "summary": "A central framed scene of chaotic nightmare imagery — an open-mouthed figure, a coiled snake, biohazard symbols, fragmentary text — bordered on all four sides by a dense repeating frieze of small figure studies. The frame-within-frame casts the whole as a daydream catalogued rather than resolved, the border an incantatory repetition around a disturbing centre.", "nsfw": true, "w": 7000, "h": 8400, "file": "toothless-daymare"}, {"slug": "warn-dew", "title": "Warn Dew", "category": "Citadels & Confinement", "palette": "black, white, cyan, and magenta", "summary": "A seated figure with vivid pink hair and occult facial markings has her torso merged with a dense black-and-white isometric cityscape of the kind recurring throughout the archive, pines at her legs and a maze-like bracket border framing the whole. The body-as-citadel motif reads the figure as container and territory rather than simply a person.", "nsfw": true, "w": 2000, "h": 4000, "file": "warn-dew"}];
+let EVENTS = [];
+let SETTINGS = {prints_enabled:"1", prints_intro:"Hand-finished archival prints of the ink works, printed and shipped on demand. Each carries the mark of the house.", contact_email:""};
+const SITE = "https://dewgrave.com";
+let WRITINGS = [
+ {slug:"fabley-tales",title:"Fabley Tales",kind:"Fables",pdf:"/writings/fabley-tales.pdf",cw:false,
+  blurb:"A collection of subverted, interlocking fables, found (the framing tells us) at the centre of a heptagram in an abandoned raccoon burrow.",
+  summary:"A collection of subverted, interlocking fables. 'Three Little Writers' restages the three pigs as academics scrapping for a single tenure post; 'The Boy Who Cried Panther' turns the old warning-tale into a study of loneliness and the unnameable predator at the village gate. The fables share a vocabulary — panthers at doors, kelp-wisdom, stories about stories — and each closes its loop somewhere inside another. The book opens by advising the reader against reading it during the blue blood moon, especially backwards: writing isn't safe."},
+ {slug:"essays",title:"Essays",kind:"Essays",pdf:"/writings/essays.pdf",cw:false,
+  blurb:"A set of essays the book claims were 'prepared by an isomorphic essay who became sentient.' Rigorous and playful at once.",
+  summary:"A set of essays the book claims were 'prepared by an isomorphic essay who became sentient. PISH-POSH was not consulted.' The centrepiece, 'Value as Return,' works through Marx's labour theory and capitalism's take-all-you-can-get theory before arguing for a third: that capital should flow toward whatever demonstrably returns value to the collective pot, with worth determined by crowd belief the way fiat currency is. Alongside it sit craft pieces, including a five-paragraph essay about writing a five-paragraph essay. The tone is rigorous and self-aware in equal measure."},
+ {slug:"a-poet-re",title:"A Poet, Re.",kind:"Poetry",pdf:"/writings/a-poet-re.pdf",cw:true,
+  blurb:"A poetry collection the author calls 'a carefully kursed text; an undead document.' It confronts depression and suicidal ideation directly — and survives them.",
+  summary:"A poetry collection the author calls 'a carefully kursed text; an undead document.' It confronts depression and suicidal ideation head-on — and is explicit, from its first page, that it is a record of survival rather than an invitation: the author 'was wise enough not to try,' asks at-risk readers to leave the text fallow, and dedicates the book to readers learning to live with pain. What follows is dense, internally rhymed verse — 'Preface,' 'Sundays in the Tub,' 'Bottle Up' — that treats the darkest material with formal control and gallows wit. It is the archive's most personal document, and its hardest-won."},
+ {slug:"stickleback",title:"Stickleback",kind:"Fiction",pdf:"/writings/stickleback.pdf",cw:false,
+  blurb:"A short literary fiction. Fen Sweeney wakes each morning to a listless, hungover dread in a squalid family house.",
+  summary:"A short literary fiction in the grimy-comic register. Fen Sweeney — Canucks snapback, scribbly faded tattoos, catalogued in a footnote like a police report — wakes hungover in his childhood bedroom, blacked-out window and all, and descends into a household argument already in progress. Every family member arrives with their own deadpan dossier footnote. The novella's joke and its wound are the same thing: a man who would always rather be asleep, rendered with merciless specificity."}
+];
+let BLOG = [
+ {slug:"welcome",title:"The archive opens",date:"2026-06-11",tag:"Notes",
+  excerpt:"A first word on what this place is, why it exists, and what's coming to it.",
+  body:["The archive is open. Everything Dewgrave has made that can be hosted now lives here: four books, fifty-three ink works across six rooms, and the beginnings of a thesis called KEN.",
+        "This blog is where the work keeps moving. New pieces, new writing, half-formed ideas, and the occasional note from the studio will land here first. Think of it as the part of the archive that is still wet.",
+        "The longer aim hasn't changed: to grow this into a nonprofit foundation, and to invite people who work in data, mathematics, and physics to take the corpus seriously — to run the tests, including the ones about time. If that's you, the door is open.",
+        "For now: look around. Read something. Share what moves you. And if you'd like to know when the next thing arrives, the mailing list is below.\n\nAs above, so below."]}
+];
+const CATS=["Citadels & Confinement","Portals & Liminality","Language & The Sign","Ritual & Hermetica","Growth & Nature","Studies & Ephemera"];
+const CATBLURB={
+ "Citadels & Confinement":"Brick by obsessive brick: fortresses, panopticons, impossible stairs. Architecture as enclosure, and enclosure as a state of mind.",
+ "Portals & Liminality":"Thresholds drawn so precisely they start to open. Mandalas, gates, and structures caught between above and below.",
+ "Language & The Sign":"Letterforms as buildings, names as seals, sentences anatomised. The sign examined until it confesses.",
+ "Ritual & Hermetica":"Working diagrams: banishing rituals, summonings, grimoire pages. The ceremonial machinery of KEN.",
+ "Growth & Nature":"Vines through brickwork, nurse trees, clockwork flowers. What grows in spite of — and because of — the wall.",
+ "Studies & Ephemera":"Patterns, studies, and play. The sketchbook breathing between the major works."};
+const SIGIL='<svg viewBox="0 0 600 820"><use href="#sigil-core"/></svg>';
+const $=s=>document.querySelector(s);
+const esc=s=>(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+let nsfwOK=false; try{nsfwOK=localStorage.getItem("dg-nsfw")==="1";}catch(e){}
+
+function shareBlock(path,title){
+  const u=encodeURIComponent(SITE+path), t=encodeURIComponent(title+" — DEWGRAVE");
+  return `<div class="share"><span class="lbl">Share</span>
+   <a href="https://twitter.com/intent/tweet?url=${u}&text=${t}" target="_blank" rel="noopener" aria-label="Share on X"><svg viewBox="0 0 24 24"><path d="M18.9 2H22l-7.3 8.3L23 22h-6.6l-5-6.6L5.6 22H2.5l7.8-8.9L1.7 2h6.7l4.5 6 5.9-6zm-1.2 18h1.8L7.2 3.8H5.3L17.7 20z"/></svg></a>
+   <a href="https://www.facebook.com/sharer/sharer.php?u=${u}" target="_blank" rel="noopener" aria-label="Share on Facebook"><svg viewBox="0 0 24 24"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.2c-1.2 0-1.6.8-1.6 1.6V12h2.7l-.4 2.9h-2.3v7A10 10 0 0 0 22 12z"/></svg></a>
+   <a href="https://wa.me/?text=${t}%20${u}" target="_blank" rel="noopener" aria-label="Share on WhatsApp"><svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.2-1.7-.8-2-.9-.3-.1-.5-.2-.7.2-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.6-.3-.5.3-.5.8-1.5.1-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.8.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.5A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-2.9.9.9-2.8-.2-.3A8.2 8.2 0 1 1 12 20.2z"/></svg></a>
+   <a href="mailto:?subject=${t}&body=${u}" aria-label="Share by email"><svg viewBox="0 0 24 24"><path d="M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm9 7.5L4.3 7H19.7L12 12.5zM4 9.2V17h16V9.2l-7.4 5.3a1 1 0 0 1-1.2 0L4 9.2z"/></svg></a>
+   <button onclick="copyLink('${path}',this)" aria-label="Copy link"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.1 0l3-3a5 5 0 0 0-7.1-7.1l-1.7 1.7 1.4 1.4 1.7-1.7a3 3 0 0 1 4.3 4.3l-3 3a3 3 0 0 1-4.3 0 1 1 0 0 0-1.4 1.4zm4-2a5 5 0 0 0-7.1 0l-3 3a5 5 0 0 0 7.1 7.1l1.7-1.7-1.4-1.4-1.7 1.7a3 3 0 0 1-4.3-4.3l3-3a3 3 0 0 1 4.3 0 1 1 0 0 0 1.4-1.4z"/></svg></button>
+   <span class="copied" id="copied" style="display:none">Link copied</span></div>`;
+}
+function copyLink(path,btn){
+  const url=SITE+path;
+  navigator.clipboard.writeText(url).then(()=>{const c=document.getElementById('copied');if(c){c.style.display='inline';setTimeout(()=>c.style.display='none',1800);}}).catch(()=>{});
+}
+function mlForm(src){
+  const id="ml_"+Math.random().toString(36).slice(2,7);
+  return `<form class="mlform" onsubmit="return mlSubmit(event,'${id}','${src}')">
+    <input type="email" id="${id}_in" placeholder="your@email.com" required autocomplete="email">
+    <button class="btn" type="submit">Join the list</button>
+    <div class="mlmsg" id="${id}_msg" style="flex-basis:100%"></div></form>`;
+}
+async function mlSubmit(e,id,src){
+  e.preventDefault();
+  const input=document.getElementById(id+"_in"), msg=document.getElementById(id+"_msg");
+  const email=input.value.trim(); if(!email) return false;
+  msg.className="mlmsg"; msg.textContent="Sending…";
+  try{
+    const r=await fetch("/api/subscribe",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,source:src})});
+    const j=await r.json().catch(()=>({}));
+    if(r.ok&&j.ok){msg.className="mlmsg ok";msg.textContent="You're on the list. Welcome.";input.value="";try{localStorage.setItem("dg-ml-done","1");}catch(_){}}
+    else if(j.reason==="not_configured"){msg.className="mlmsg ok";msg.textContent="Noted — the list opens shortly. Thank you.";input.value="";}
+    else{msg.className="mlmsg err";msg.textContent=j.error||"Something went wrong. Try again.";}
+  }catch(_){msg.className="mlmsg err";msg.textContent="Network error. Try again.";}
+  return false;
+}
+function mlSection(src){return `<div class="ml"><div class="mono">The Mailing List</div><h3>Don't miss the next one</h3><p>New art, new writing, and word of upcoming events — sent only when there's something worth sending. No noise.</p>${mlForm(src)}</div>`;}
+function mlCompact(src){return `<div class="ml compact"><div class="mono">The Mailing List</div><h3>Stay in the loop</h3><p>Get word when Dewgrave releases something new.</p>${mlForm(src)}</div>`;}
+
+function gcard(a){return `<a class="gcard" href="/art/${a.slug}"><div class="im"><img loading="lazy" width="215" height="215" src="/art/thumb/${a.slug}.webp" alt="${esc(a.title)} — ink work by Dewgrave"></div><div class="meta"><span class="mono">${esc(a.category)}</span><b>${esc(a.title)}</b></div></a>`;}
+function buyBlock(a){
+  const on = String(SETTINGS.prints_enabled||"1")==="1";
+  if(!on) return "";
+  const contact = SETTINGS.contact_email || "";
+  if(a.for_sale && a.print_url){
+    return `<div class="buy"><div class="mono">The Print Room</div><div class="row"><div><strong style="font-size:22px">Archival print of &ldquo;${esc(a.title)}&rdquo;</strong>${a.print_note?`<p>${esc(a.print_note)}</p>`:`<p>Printed and shipped on demand. Carries the mark of the house.</p>`}</div><div style="text-align:right">${a.print_price?`<div class="price">${esc(a.print_price)}</div>`:``}<a class="btn" href="${esc(a.print_url)}" target="_blank" rel="noopener" style="margin-top:8px">Buy a print &rarr;</a></div></div></div>`;
+  }
+  const subj=encodeURIComponent("Print enquiry — "+a.title), to=contact?esc(contact):"";
+  const href = to ? `mailto:${to}?subject=${subj}` : `/prints`;
+  return `<div class="buy"><div class="mono">The Print Room</div><div class="row"><div><strong style="font-size:22px">Want this as a print?</strong><p>Archival prints of this work are available to order on enquiry.</p></div><a class="btn" href="${href}">Enquire to buy &rarr;</a></div></div>`;
+}
+function wcard(w){return `<a class="card" href="/writings/${w.slug}"><div class="mono">The Writings · ${w.kind}${w.cw?' · <span class="cw">Content Warning</span>':''}</div><h3>${w.title}</h3><p>${w.blurb}</p></a>`;}
+
+const R={};
+R[""]=()=>{const sfw=ART.filter(a=>!a.nsfw);return `
+  <div class="hero"><div class="wrap"><div>
+    <div class="kick">AN ARCHIVE OF KEN · AS ABOVE, SO BELOW</div>
+    <h1 class="big">DEWGRAVE</h1>
+    <p class="lede">${SETTINGS.home_lede ? esc(SETTINGS.home_lede) : `The collected writings and visual works of <em>Dewgrave</em>, under the imprint C.&amp;C. DEWGRAVE &amp; Co. No. I. Ink on paper, signal under noise. Every document and every art piece is hosted here, each with its summary — ${ART.length} works in ink, ${WRITINGS.length} books, one backbone: <em>information</em>.`}</p>
+    <div class="btnrow"><a class="btn" href="/gallery">Enter the gallery</a><a class="btn ghost" href="/writings">Read the writings</a><a class="btn ghost" href="/ken">What is KEN?</a></div>
+  </div><div class="hero-sigil"><div class="sigil-anim">${SIGIL}</div></div></div></div>
+  <section class="band"><div class="wrap"><div class="sec-label"><span class="mono">01 · The Writings</span></div><div class="grid2">${WRITINGS.map(wcard).join("")}</div></div></section>
+  <section class="band"><div class="wrap"><div class="sec-label"><span class="mono">02 · The Visual Works</span></div><h2 class="sec">The Gallery</h2>
+    <p style="max-width:42em;color:var(--ink-soft);margin-bottom:28px">Fifty-three works, six rooms. Mostly black ink on white paper — citadels, portals, letterforms, rituals, growth — with the occasional teal flare. Each piece hangs with its own summary.</p>
+    <div class="ggrid">${sfw.slice(0,8).map(gcard).join("")}</div>
+    <div class="btnrow" style="margin-top:26px"><a class="btn" href="/gallery">All ${ART.length} works →</a></div></div></section>
+  <section class="band"><div class="wrap"><div class="sec-label"><span class="mono">03 · The Long Aim</span></div><div class="grid2">
+    <a class="card" href="/ken"><div class="mono">The Backbone</div><h3>KEN</h3><p>To ken is to know. Information as fundamental material; the Emerald Tablet and the Kybalion as anchors; the binary refrain 0101010 under the ink.</p></a>
+    <a class="card" href="/research"><div class="mono">The Foundation</div><h3>The Research</h3><p>The archive's long aim: a nonprofit foundation inviting data analysts and physicists to run the tests — including on the question of time.</p></a>
+  </div></div></section>
+  <section class="band"><div class="wrap">${mlSection("home")}</div></section>`;};
+
+R["gallery"]=()=>{
+  const rooms=CATS.map(c=>{const works=ART.filter(a=>a.category===c&&!a.nsfw);if(!works.length)return"";
+    return `<div class="cathead"><h3>${c}</h3><span class="mono">${works.length} works</span></div><p style="max-width:44em;color:var(--ink-soft);margin-bottom:16px">${CATBLURB[c]}</p><div class="ggrid">${works.map(gcard).join("")}</div>`;}).join("");
+  const mature=ART.filter(a=>a.nsfw);
+  const matureBlock=nsfwOK?`<div class="cathead"><h3 style="color:var(--red)">Mature Works</h3><span class="mono">${mature.length} works · viewer discretion</span></div><div class="ggrid">${mature.map(gcard).join("")}</div>`
+   :`<div class="gate"><div class="mono" style="color:var(--red);margin-bottom:10px">Restricted Wing</div><h3>Mature Works</h3><p>Four pieces in this room carry adult imagery — the body as manuscript, as citadel, as ritual ground. Viewer discretion is mandated. Enter only if you are of age and willing.</p><button onclick="unlockNSFW()">I am of age — enter</button><button class="no" onclick="go('/')">Return to console</button></div>`;
+  return `<section class="band"><div class="wrap"><div class="kick">VISUAL WORKS · EACH PIECE HOSTED, EACH WITH ITS SUMMARY</div><h2 class="sec">The Gallery</h2>
+    <p style="max-width:44em;color:var(--ink-soft)">Six rooms and a restricted wing. Click any piece for the full scan and its record. Originals are archived at full resolution in the Dewgrave vault.</p>
+    ${rooms}<div style="margin-top:54px">${matureBlock}</div></div></section>`;};
+
+R["art"]=(slug)=>{const i=ART.findIndex(a=>a.slug===slug);if(i<0)return R[""]();const a=ART[i];
+  if(a.nsfw&&!nsfwOK){return `<section class="band"><div class="wrap"><div class="gate"><div class="mono" style="color:var(--red);margin-bottom:10px">Restricted Wing</div><h3>${esc(a.title)}</h3><p>This piece carries adult imagery. Viewer discretion is mandated.</p><button onclick="unlockNSFW('/art/${a.slug}')">I am of age — view</button><button class="no" onclick="go('/gallery')">Back to gallery</button></div></div></section>`;}
+  const pool=ART.filter(x=>x.nsfw===a.nsfw);const pi=pool.findIndex(x=>x.slug===slug);
+  const prev=pool[(pi-1+pool.length)%pool.length],next=pool[(pi+1)%pool.length];
+  return `<section class="band"><div class="wrap"><div class="kick"><a href="/gallery" style="text-decoration:none">← The Gallery</a> · ${esc(a.category)}</div><h2 class="sec">${esc(a.title)}</h2>
+    <div class="artpage"><div><div class="artframe"><img src="/art/full/${a.slug}.webp" alt="${esc(a.title)} — ink work by Dewgrave"></div></div>
+    <div><dl class="spec"><dt>Summary</dt><dd>${esc(a.summary)}</dd><dt>Room</dt><dd>${esc(a.category)}</dd><dt>Palette</dt><dd style="text-transform:capitalize">${esc(a.palette)}</dd><dt>Record</dt><dd>${esc(a.file||a.slug)} · ${a.w}×${a.h}px original${a.nsfw?' · mature':''}<br><span class="mono" style="font-size:9.5px;color:var(--ink-soft)">Full-resolution original archived in the Dewgrave vault</span></dd></dl>
+    ${buyBlock(a)}
+    ${shareBlock('/art/'+a.slug,a.title)}
+    <div class="pn"><a class="btn ghost" href="/art/${prev.slug}">← ${esc(prev.title)}</a><a class="btn ghost" href="/art/${next.slug}">${esc(next.title)} →</a></div></div></div>
+    ${mlCompact('art:'+a.slug)}</div></section>`;};
+
+R["prints"]=()=>{
+  const forSale=ART.filter(a=>a.for_sale&&a.print_url&&!a.nsfw);
+  const intro=SETTINGS.prints_intro||"Hand-finished archival prints of the ink works, printed and shipped on demand. Each carries the mark of the house.";
+  const grid = forSale.length
+    ? `<div class="pgrid">${forSale.map(a=>`<a class="gcard" href="/art/${a.slug}"><div class="im"><img loading="lazy" src="/art/thumb/${a.slug}.webp" alt="${esc(a.title)}"></div><div class="meta"><span class="mono">${esc(a.category)}${a.print_price?" · "+esc(a.print_price):""}</span><b>${esc(a.title)}</b></div></a>`).join("")}</div>`
+    : `<div class="events-empty"><h3>The print room is opening</h3><p style="max-width:36em;margin:0 auto">Prints of the ink works are being set up now. Browse the <a href="/gallery">gallery</a> — every piece will be available as an archival print, and the mailing list hears first.</p></div>`;
+  return `<section class="band"><div class="wrap"><div class="kick">THE PRINT ROOM</div><h2 class="sec">Prints</h2>
+    <p style="max-width:44em;color:var(--ink-soft);margin-bottom:30px">${esc(intro)}</p>
+    ${grid}<div style="margin-top:34px">${mlCompact("prints")}</div></div></section>`;};
+
+R["contact"]=()=>`<section class="band"><div class="wrap"><div class="kick">GET IN TOUCH</div><h2 class="sec">Contact</h2>
+    <p style="max-width:44em;color:var(--ink-soft);margin-bottom:30px">Questions about the work, prints, exhibitions, or the research — send a message and it reaches Dewgrave directly. For mailing-list sign-ups, use the form at the foot of any page.</p>
+    <form class="contactform" onsubmit="return contactSubmit(event)" style="max-width:560px">
+      <div style="position:absolute;left:-9999px" aria-hidden="true"><input type="text" name="company" id="c_company" tabindex="-1" autocomplete="off"></div>
+      <label class="mono" style="display:block;color:var(--ink-soft);margin-bottom:18px">Your name
+        <input type="text" id="c_name" required autocomplete="name" style="display:block;width:100%;margin-top:6px;padding:12px 14px;border:2px solid var(--ink);background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:17px"></label>
+      <label class="mono" style="display:block;color:var(--ink-soft);margin-bottom:18px">Your email
+        <input type="email" id="c_email" required autocomplete="email" placeholder="your@email.com" style="display:block;width:100%;margin-top:6px;padding:12px 14px;border:2px solid var(--ink);background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:17px"></label>
+      <label class="mono" style="display:block;color:var(--ink-soft);margin-bottom:18px">Message
+        <textarea id="c_msg" required rows="6" style="display:block;width:100%;margin-top:6px;padding:12px 14px;border:2px solid var(--ink);background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:17px;line-height:1.5;resize:vertical"></textarea></label>
+      <button class="btn" type="submit">Send message</button><span class="mlmsg" id="contact_msg" style="margin-left:12px"></span>
+    </form>
+    <div style="margin-top:44px">${mlCompact("contact")}</div></div></section>`;
+async function contactSubmit(e){
+  e.preventDefault();
+  const msg=document.getElementById("contact_msg");
+  const name=(document.getElementById("c_name").value||"").trim();
+  const email=(document.getElementById("c_email").value||"").trim();
+  const message=(document.getElementById("c_msg").value||"").trim();
+  const company=((document.getElementById("c_company")||{}).value)||"";
+  if(!name||!email||!message){msg.className="mlmsg err";msg.textContent="Please fill in every field.";return false;}
+  msg.className="mlmsg";msg.textContent="Sending…";
+  try{
+    const r=await fetch("/api/contact",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,email,message,company,source:"contact-page"})});
+    const j=await r.json().catch(()=>({}));
+    if(r.ok&&j.ok){msg.className="mlmsg ok";msg.textContent="Message sent — thank you. You'll hear back soon.";document.querySelector(".contactform").reset();}
+    else{msg.className="mlmsg err";msg.textContent=j.error||"Something went wrong. Please try again.";}
+  }catch(_){msg.className="mlmsg err";msg.textContent="Network error. Please try again.";}
+  return false;
+}
+
+R["writings"]=(slug)=>{
+  if(slug){const w=WRITINGS.find(x=>x.slug===slug);if(!w)return R["writings"]();
+    return `<section class="band"><div class="wrap"><div class="kick"><a href="/writings" style="text-decoration:none">← The Writings</a> · ${w.kind}</div>
+      <div class="bookhead"><div class="mono" style="color:var(--teal-deep);margin-bottom:10px">C.&amp;C. DEWGRAVE &amp; Co. No. I · No rights reserved</div><h2>${w.title}</h2><div class="mono" style="margin-top:10px;color:var(--ink-soft)">WILL DEWGRAVE</div></div>
+      ${w.cw?'<div class="warn">Content warning — this collection confronts depression and suicidal ideation directly. Reader discretion is mandated. If you are struggling, please reach out to someone you trust before reading.</div>':''}
+      <div class="prose"><h3>Summary</h3><p>${w.summary}</p><p class="notice" style="margin-top:24px">The complete document is hosted in this archive.</p></div>
+      <div class="btnrow"><a class="btn" href="${w.pdf}" target="_blank" rel="noopener">Read the PDF</a><a class="btn ghost" href="${w.pdf}" download>Download</a></div>
+      ${shareBlock('/writings/'+w.slug,w.title)}
+      ${mlCompact('writing:'+w.slug)}</div></section>`;}
+  return `<section class="band"><div class="wrap"><div class="kick">THE WRITINGS · EVERY DOCUMENT HOSTED, EACH WITH ITS SUMMARY</div><h2 class="sec">The Writings</h2>
+    <p style="max-width:44em;color:var(--ink-soft);margin-bottom:30px">Four books under the imprint C.&amp;C. DEWGRAVE &amp; Co. No. I. Free to reproduce; share these documents as you Will. Each is summarised below and hosted in full.</p>
+    <div class="grid2">${WRITINGS.map(wcard).join("")}</div></div></section>`;};
+
+R["blog"]=(slug)=>{
+  if(slug){const p=BLOG.find(x=>x.slug===slug);if(!p)return R["blog"]();
+    return `<section class="band"><div class="wrap"><div class="kick"><a href="/blog" style="text-decoration:none">← The Blog</a> · ${p.tag}</div>
+      <h2 class="sec">${esc(p.title)}</h2><div class="mono" style="color:var(--ink-soft);margin-bottom:24px">${p.date} · Dewgrave</div>
+      <div class="prose">${p.body.map(par=>'<p>'+esc(par).replace(/\n\n/g,'</p><p>')+'</p>').join("")}</div>
+      ${shareBlock('/blog/'+p.slug,p.title)}${mlCompact('blog:'+p.slug)}</div></section>`;}
+  return `<section class="band"><div class="wrap"><div class="kick">DISPATCHES FROM DEWGRAVE</div><h2 class="sec">The Blog</h2>
+    <p style="max-width:44em;color:var(--ink-soft);margin-bottom:30px">New ideas, new art, new stories — and notes from the studio as the work moves. The freshest part of the archive.</p>
+    <div class="bloglist">${BLOG.map(p=>`<a class="bpost" href="/blog/${p.slug}"><div class="mono">${p.date} · ${p.tag}</div><h3>${esc(p.title)}</h3><p>${esc(p.excerpt)}</p></a>`).join("")}</div>
+    ${mlSection("blog-index")}</div></section>`;};
+
+R["events"]=()=>{
+  const list = (EVENTS&&EVENTS.length)
+    ? EVENTS.map(e=>`<div class="evt"><div class="when">${esc(e.date||"TBA")}</div><div><h3>${esc(e.title)}</h3>${e.location?`<div class="where">${esc(e.location)}</div>`:""}${e.description?`<p>${esc(e.description)}</p>`:""}${e.link?`<div class="btnrow" style="margin-top:12px"><a class="btn ghost" href="${esc(e.link)}" target="_blank" rel="noopener">Details →</a></div>`:""}</div></div>`).join("")
+    : `<div class="events-empty"><h3>Nothing on the calendar — yet</h3><p style="max-width:34em;margin:0 auto">We'll post events here as we book them: dates, places, and how to come. The mailing list hears first.</p></div>`;
+  return `<section class="band"><div class="wrap"><div class="kick">WHAT'S COMING</div><h2 class="sec">Events</h2>
+  <p style="max-width:44em;color:var(--ink-soft);margin-bottom:30px">Readings, showings, and gatherings under the Dewgrave imprint.</p>
+  ${list}<div style="margin-top:34px">${mlSection("events")}</div></div></section>`;};
+
+R["ken"]=()=>`<section class="band"><div class="wrap"><div class="kick">THE BACKBONE</div><h2 class="sec">KEN</h2><div class="prose">
+  <p>KEN is the backbone. To <em>ken</em> is to know, to perceive, to hold a thing in understanding. It is the oldest word in this archive and the one every other piece bends toward.</p>
+  <p>Dewgrave's project treats information as the fundamental material. Not paint, not paper, not language for its own sake, but the signal carried underneath all of them. The visual works repeat a binary refrain (0101010), a sign that the message is always there to be decoded if you have learned how to read.</p>
+  <h3>The Hermetic frame</h3><p>The work sits inside a Hermetic lineage. Two texts anchor it:</p>
+  <p><em>The Emerald Tablet.</em> "As above, so below." The pattern that holds at the largest scale holds at the smallest. The piece <a href="/art/microcosmic">Microcosmic</a> is the most direct statement of this principle, but the correspondence runs through everything: citadels mirror minds, growth-studies mirror cosmologies.</p>
+  <p><em>The Kybalion.</em> The seven Hermetic principles operate here as a grammar. The first, that "all is mind," is why information can be treated as the ground of reality rather than a description of it.</p>
+  <h3>Signal and noise</h3><p>"The medium is the message." Across the writings and the ink works, Dewgrave returns to the difference between noise (the surface, the framing, the panther at the door) and signal (the wisdom hidden plainly, always in the guise of a story). KEN is the act of telling them apart.</p>
+  <p class="notice">As above, so below.</p></div></div></section>`;
+
+R["research"]=()=>`<section class="band"><div class="wrap"><div class="kick">THE LONG AIM</div><h2 class="sec">The Research</h2><div class="prose">
+  <p>The long aim of this archive is to become a nonprofit foundation, and to invite data analysts, mathematicians, and physicists to treat the corpus as a serious experimental program: to run the tests, including on the question of time.</p>
+  <p>The works are dense by design. They repeat, fold back on themselves, and hide structure inside narrative. Dewgrave's wager is that there is measurable pattern in the corpus worth studying with proper tools, not only literary reading.</p></div>
+  <div class="grid2" style="margin-top:34px">
+   <div class="card"><div class="mono">01 · Archive</div><h3>Catalogue</h3><p>Every text and visual work in one place, with a clean record of each piece. <em>This step is done — you are looking at it.</em></p></div>
+   <div class="card"><div class="mono">02 · Foundation</div><h3>Nonprofit</h3><p>Stand up a foundation so the work can be held, funded, and stewarded outside of any single person.</p></div>
+   <div class="card"><div class="mono">03 · Tests</div><h3>Experiments</h3><p>Bring on data and analytics experts to run the experiments, including the work on time, and publish what they find.</p></div>
+   <div class="card"><div class="mono">∞ · Get involved</div><h3>Contact</h3><p>If you work in data, mathematics, or physics and this interests you, the foundation is being formed now. Join the mailing list to be kept in the loop.</p></div></div>
+  <div style="margin-top:34px">${mlCompact("research")}</div></div></section>`;
+
+R["author"]=()=>`<section class="band"><div class="wrap"><div class="kick">CONSTR. BY C.&amp;C. DEWGRAVE &amp; CO. NO. I</div><h2 class="sec">The Author</h2>
+  <div class="artpage"><div class="prose">
+   <p><em>Will Dewgrave</em> is the name signed — forwards, backwards, and folded into sigils — across everything in this archive: four books, fifty-three ink works, and one recurring insistence that <em>there is nothing going on</em>.</p>
+   <p>The author works in black ink on white paper, in invented scripts and borrowed rituals, in fables that know they are fables. The books are free to reproduce ("share this document as you Will"), and the works claim no rights — the archive's economy runs on KEN, not copyright.</p>
+   <p>The signature is the seal: WILL DEWGRAVE, mirrored as EVARGWED LLIW, appears inside the works themselves — a name treated as a sigil, an identity treated as a vine that grows around and through its structures.</p>
+   <p class="notice">Dedicated to the characters in stories, may they find happy endings after we stop reading.</p></div>
+   <div><div class="artframe">${SIGIL}</div><p class="notice" style="margin-top:12px;text-align:center">The mark of the house: horns over the circle, the eye in the square in the triangle, the bar, and the two waves.</p></div></div></div></section>`;
+
+function unlockNSFW(target){nsfwOK=true;try{localStorage.setItem("dg-nsfw","1");}catch(e){}if(target)go(target);else render();}
+function go(path){history.pushState({},"",path);render();}
+document.addEventListener("click",e=>{const a=e.target.closest('a');if(!a)return;const href=a.getAttribute("href");if(href&&href.startsWith("/")&&!a.hasAttribute("download")&&a.target!=="_blank"&&!href.match(/\.(pdf|png|webp|jpg)$/)){e.preventDefault();go(href);}});
+window.addEventListener("popstate",render);
+
+const TITLES={gallery:"The Gallery | DEWGRAVE",writings:"The Writings | DEWGRAVE",ken:"KEN, the backbone | DEWGRAVE",research:"The Research | DEWGRAVE",author:"The Author | DEWGRAVE",events:"Events | DEWGRAVE",blog:"The Blog | DEWGRAVE",prints:"Prints | DEWGRAVE",contact:"Contact | DEWGRAVE"};
+function render(){
+  const parts=location.pathname.replace(/^\/|\/$/g,"").split("/");
+  const route=parts[0]||"",param=parts[1]||"";
+  const fn=R[route]||R[""];
+  $("#app").innerHTML=`<div class="fade-in">${fn(param)}</div>`;
+  document.querySelectorAll("#nav a").forEach(a=>a.classList.toggle("on",a.dataset.r===route||(route==="art"&&a.dataset.r==="gallery")));
+  let title=TITLES[route]||"DEWGRAVE | Writings & Visual Works of Dewgrave";
+  if(route==="art"){const a=ART.find(x=>x.slug===param);if(a)title=a.title+" — DEWGRAVE";}
+  if(route==="writings"&&param){const w=WRITINGS.find(x=>x.slug===param);if(w)title=w.title+" — DEWGRAVE";}
+  if(route==="blog"&&param){const p=BLOG.find(x=>x.slug===param);if(p)title=p.title+" — DEWGRAVE";}
+  document.title=title;
+  window.scrollTo(0,0);
+}
+async function loadLiveContent(){
+  try{
+    const r=await fetch("/api/content",{headers:{"Accept":"application/json"}});
+    if(!r.ok) return;
+    const c=await r.json();
+    if(!c || c.fallback) return;
+    if(Array.isArray(c.art)&&c.art.length) ART=c.art.map(a=>({...a, nsfw:!!a.nsfw, for_sale:!!a.for_sale, file:a.file||a.slug}));
+    if(Array.isArray(c.writings)&&c.writings.length) WRITINGS=c.writings.map(w=>({...w, cw:!!w.cw}));
+    if(Array.isArray(c.posts)) BLOG=c.posts.map(p=>({...p, body: typeof p.body==="string" ? p.body.split(/\n\n+/) : (p.body||[])}));
+    if(Array.isArray(c.events)) EVENTS=c.events;
+    if(c.settings&&typeof c.settings==="object") SETTINGS=Object.assign(SETTINGS,c.settings);
+  }catch(e){}
+}
+(async function init(){ await loadLiveContent(); render(); })();
+
+/* popup */
+(function(){
+  let shown=false;
+  function done(){try{return localStorage.getItem("dg-ml-pop")==="1"||localStorage.getItem("dg-ml-done")==="1";}catch(e){return false;}}
+  function show(){
+    if(shown||done())return;shown=true;try{localStorage.setItem("dg-ml-pop","1");}catch(e){}
+    const r=document.getElementById("popup-root");
+    r.innerHTML=`<div class="pop-ov" onclick="if(event.target===this)this.remove()"><div class="pop"><button class="x" onclick="this.closest('.pop-ov').remove()" aria-label="Close">✕</button>${SIGIL.replace('<svg','<svg style="height:54px"')}<h3>Before you go</h3><p>Join the Dewgrave mailing list — new art, new writing, and events, sent only when it matters.</p>${mlForm("popup")}</div></div>`;
+  }
+  setTimeout(show,28000);
+  window.addEventListener("scroll",function onScroll(){if((window.scrollY+window.innerHeight)/document.body.scrollHeight>0.55){show();window.removeEventListener("scroll",onScroll);}});
+})();
+</script>
+<noscript><p style="padding:40px;text-align:center">DEWGRAVE — the writings and visual works of Dewgrave. Books: /writings/fabley-tales.pdf, /writings/essays.pdf, /writings/a-poet-re.pdf, /writings/stickleback.pdf</p></noscript>
+</body>
+</html>
