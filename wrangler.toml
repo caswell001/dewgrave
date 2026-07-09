@@ -1,0 +1,29 @@
+name = "dewgrave-site"
+account_id = "04277c34732738e0fade317b9c6baa63"
+main = "worker.js"
+compatibility_date = "2026-06-29"
+workers_dev = true
+
+routes = [
+  { pattern = "dewgrave.com", custom_domain = true },
+  { pattern = "www.dewgrave.com", custom_domain = true }
+]
+
+[assets]
+directory = "./deploy_v3"
+binding = "ASSETS"
+run_worker_first = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "dewgrave-cms"
+database_id = "bb4ada8e-6ae1-47a9-a56e-181755a114ec"
+
+# ---- SECRETS the owner must set on this Worker (values not known here) ----
+#   wrangler secret put RESEND_API_KEY       # admin email-OTP login + welcome emails
+#   wrangler secret put ADMIN_SECRET         # signs the admin session cookie
+#   wrangler secret put RESEND_AUDIENCE_ID   # Resend audience for subscribers
+#   wrangler secret put RESEND_FROM          # from-address for emails
+# Optional vars (were set on the old Pages project — re-add if used):
+#   ADMIN_EMAILS (allowed admin login emails), CF_ANALYTICS_TOKEN, CF_ZONE_ID
+# Without these: the public site + subscribe(->D1) work; admin OTP login + emails are down until set.
