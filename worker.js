@@ -2,6 +2,7 @@ const SECTION_META = {"/art/33-leaves": {"t": "33 Leaves, DEWGRAVE", "d": "A sym
 const SITE = "https://dewgrave.com";
 const DEF = SECTION_META["/"];
 const ESC = s => (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const ALL_WORKS_NAV = `<nav aria-label="All works" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0"><h2>Archive index</h2>`+Object.keys(SECTION_META).filter(k=>k.startsWith("/art/")||k.startsWith("/writings/")).map(k=>`<a href="${k}">${ESC(SECTION_META[k].t||k)}</a>`).join("")+`</nav>`;
 const J = (o,s)=>new Response(JSON.stringify(o),{status:s||200,headers:{"Content-Type":"application/json","Cache-Control":"no-store"}});
 const ASSET_RE = /\.(webp|png|jpg|jpeg|svg|pdf|ico|css|js|txt|xml|woff2?|json|map)$/i;
 
@@ -411,6 +412,7 @@ export default {
     let html=await shell.text();
     html=html.replace("<!--OG_HEAD-->", ogHead(p==="" ? "/" : (p.replace(/\/$/,"")||"/"), im));
     if(request.method==="GET"){ const pv=logView(env,request,p); if(ctx&&ctx.waitUntil) ctx.waitUntil(pv); }
+    html=html.replace("</body>", ALL_WORKS_NAV+"</body>");
     return new Response(html,{headers:{"Content-Type":"text/html; charset=utf-8","Cache-Control":"no-cache"}});
   }
 };
