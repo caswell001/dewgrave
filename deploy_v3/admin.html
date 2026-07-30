@@ -146,7 +146,7 @@ window.editWriting=(slug)=>{const w=(typeof slug==='string'&&slug)?((DATA.writin
    ${field("Blurb (card text)","w_blurb",w.blurb,true)}${field("Summary (short, shown above the full text)","w_sum",w.summary,true)}
    ${field("Full text (the whole writing, shown on its page; leave blank to show only the summary and PDF link)","w_body",w.body||"",true)}
    <div class="grid2">${field("Sort","w_sort",w.sort||0)}<div>${chk("Content warning","w_cw",w.cw)}${chk("Published","w_pub",w.published!==0)}</div></div>
-   <div class="note">Paste the whole writing into <b>Full text</b> above to show it on the page. The PDF link is optional (it stays as a Download button); to swap the actual PDF file, send it to me to host.</div>
+   <div class="note">Paste the whole writing into <b>Full text</b> above to show it on the page. The PDF link is optional (it stays as a Download button).</div>
    <div style="margin-top:18px"><button onclick="doSaveWriting()">Save</button> <button class="ghost" onclick="renderTabs()">Cancel</button>${!isNew?`<button class="danger" onclick="delItem('writings','${w.slug}')" style="float:right">Delete</button>`:''}<span class="msg" id="sm"></span></div>`;
 };
 function fileToDataURL(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f);});}
