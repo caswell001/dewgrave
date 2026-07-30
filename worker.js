@@ -285,10 +285,13 @@ async function saveRecord(env, type, r){
   }
   if(type==="writings"){
     const cols=["slug","title","kind","blurb","summary","body","pdf","cw","sort","published"];
-    const binds=cols.map(c=> c==="cw"||c==="published"?(r[c]?1:0):(c==="sort"?(r[c]|0):(r[c]??null)));
-    const sql=`INSERT INTO writings (${cols.join(",")},updated_at) VALUES (${cols.map(()=>"?").join(",")},?)
-      ON CONFLICT(slug) DO UPDATE SET ${cols.slice(1).map(c=>c+"=excluded."+c).join(",")},updated_at=excluded.updated_at`;
-    await env.DB.prepare(sql).bind(...binds, now).run(); return;
+    let pdfSet="", binds=cols.map(c=> c==="cw"||c==="published"?(r[c]?1:0):(c==="sort"?(r[c]|0):(r[c]??null)));
+    // optional PDF upload (data URL base64 of the pdf)
+    if(r.pdf_blob){ pdfSet=",pdf_blob=excluded.pdf_blob"; }
+    const sql=`INSERT INTO writings (${cols.join(",")},updated_at${r.pdf_blob?",pdf_blob":""}) VALUES (${cols.map(()=>"?").join(",")},?${r.pdf_blob?",?":""})
+      ON CONFLICT(slug) DO UPDATE SET ${cols.slice(1).map(c=>c+"=excluded."+c).join(",")},updated_at=excluded.updated_at${pdfSet}`;
+    binds.push(now); if(r.pdf_blob){ binds.push(r.pdf_blob); }
+    await env.DB.prepare(sql).bind(...binds).run(); return;
   }
   if(type==="posts"){
     const cols=["slug","title","tag","date","excerpt","body","sort","published"];
@@ -315,6 +318,16 @@ async function imageFromDB(env, p){
   const bin=unb64url(String(row.b).replace(/^data:[^,]+,/,""));
   const bytes=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
   return new Response(bytes,{headers:{"Content-Type":"image/webp","Cache-Control":"public, max-age=3600"}});
+}
+
+/* ---------- pdf fallback from D1 ---------- */
+async function pdfFromDB(env, slug){
+  if(!env.DB) return null;
+  const row=await env.DB.prepare("SELECT pdf_blob FROM writings WHERE slug=?").bind(slug).first();
+  if(!row||!row.pdf_blob) return null;
+  const bin=unb64url(String(row.pdf_blob).replace(/^data:[^,]+,/,""));
+  const bytes=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+  return new Response(bytes,{headers:{"Content-Type":"application/pdf","Cache-Control":"public, max-age=300","Content-Disposition":"inline"}});
 }
 
 /* ---------- sitemap ---------- */
@@ -394,6 +407,7 @@ export default {
     if(p==="/api/contact"){ return request.method==="POST"?contact(request,env):new Response("POST only",{status:405}); }
     if(p==="/admin"||p==="/admin/"){ return env.ASSETS.fetch(new URL("/admin.html", url.origin)); }
     if(ASSET_RE.test(p)){
+      if(request.method==="GET" && p.startsWith("/writings/") && p.endsWith(".pdf") && /^[a-z0-9-]+$/.test(p.slice(10,-4))){ const dbpdf=await pdfFromDB(env, p.slice(10,-4)); if(dbpdf) return dbpdf; }
       const isArtImg=/^\/art\/(full|thumb)\/[a-z0-9-]+\.webp$/.test(p);
       const res=await env.ASSETS.fetch(request);
       // Uploaded art has no static file; Pages may answer a missing asset with index.html (200),
