@@ -33,6 +33,7 @@ details summary{cursor:pointer;font-family:var(--mono);font-size:12px;letter-spa
 .pill{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border:1.5px solid var(--ink);margin-left:8px}
 .pill.off{color:var(--red);border-color:var(--red)}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 <body>
 <div class="bar"><b>DEWGRAVE · ADMIN</b><span><button class="ghost" id="logout" style="display:none">Log out</button></span></div>
@@ -141,14 +142,21 @@ window.editWriting=(slug)=>{const w=(typeof slug==='string'&&slug)?((DATA.writin
   $("#panel").innerHTML=`<h3>${isNew?'New writing':'Edit: '+E(w.title)}</h3>
    <div class="grid2">${field("Title","w_title",w.title)}${field("Slug","w_slug",w.slug)}</div>
    <div class="grid2">${field("Kind (Fables/Essays/…)","w_kind",w.kind)}${field("PDF path (/writings/x.pdf)","w_pdf",w.pdf)}</div>
+   <label>Upload / replace PDF (its text auto-fills Full text; served at /writings/&lt;slug&gt;.pdf)</label><input type="file" id="w_pdf_file" accept="application/pdf">
    ${field("Blurb (card text)","w_blurb",w.blurb,true)}${field("Summary (short, shown above the full text)","w_sum",w.summary,true)}
    ${field("Full text (the whole writing, shown on its page; leave blank to show only the summary and PDF link)","w_body",w.body||"",true)}
    <div class="grid2">${field("Sort","w_sort",w.sort||0)}<div>${chk("Content warning","w_cw",w.cw)}${chk("Published","w_pub",w.published!==0)}</div></div>
    <div class="note">Paste the whole writing into <b>Full text</b> above to show it on the page. The PDF link is optional (it stays as a Download button); to swap the actual PDF file, send it to me to host.</div>
    <div style="margin-top:18px"><button onclick="doSaveWriting()">Save</button> <button class="ghost" onclick="renderTabs()">Cancel</button>${!isNew?`<button class="danger" onclick="delItem('writings','${w.slug}')" style="float:right">Delete</button>`:''}<span class="msg" id="sm"></span></div>`;
 };
+function fileToDataURL(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f);});}
+async function pdfToText(f){const buf=await f.arrayBuffer();const pdf=await pdfjsLib.getDocument({data:buf}).promise;let out="";for(let p=1;p<=pdf.numPages;p++){const pg=await pdf.getPage(p);const tc=await pg.getTextContent();out+=tc.items.map(i=>i.str).join(" ")+"\n\n";}return out.trim();}
 window.doSaveWriting=async()=>{const m=$("#sm");const rec={slug:$("#w_slug").value.trim(),title:$("#w_title").value.trim(),kind:$("#w_kind").value.trim(),pdf:$("#w_pdf").value.trim(),blurb:$("#w_blurb").value.trim(),summary:$("#w_sum").value.trim(),body:$("#w_body").value,sort:parseInt($("#w_sort").value)||0,cw:$("#w_cw").checked?1:0,published:$("#w_pub").checked?1:0};
   if(!rec.slug||!rec.title){m.textContent="Title & slug required";m.className="msg err";return;}
+  const pf=$("#w_pdf_file")?$("#w_pdf_file").files[0]:null;
+  if(pf){m.textContent="Reading PDF...";m.className="msg";try{rec.pdf_blob=await fileToDataURL(pf);}catch(e){m.textContent="PDF read error";m.className="msg err";return;}
+  try{if(!pdfjsLib.GlobalWorkerOptions.workerSrc){pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";}const txt=await pdfToText(pf);if(txt){rec.body=txt;}}catch(e){}
+  if(!rec.pdf){rec.pdf="/writings/"+rec.slug+".pdf";}}
   const r=await api("save",{type:"writings",record:rec});saveMsg(m,r);if(r.ok){await loadAll();setTimeout(()=>{TAB="writings";renderTabs();},700);}};
 
 /* EVENTS */
