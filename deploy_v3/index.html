@@ -356,7 +356,7 @@ R["writings"]=(slug)=>{
       <div class="bookhead"><div class="mono" style="color:var(--teal-deep);margin-bottom:10px">C.&amp;C. DEWGRAVE &amp; Co. No. I · No rights reserved</div><h2>${w.title}</h2><div class="mono" style="margin-top:10px;color:var(--ink-soft)">WILL DEWGRAVE</div></div>
       ${w.cw?'<div class="warn">Content warning, this collection confronts depression and suicidal ideation directly. Reader discretion is mandated. If you are struggling, please reach out to someone you trust before reading.</div>':''}
       <div class="prose"><h3>Summary</h3><p>${w.summary}</p>${w.body&&w.body.trim()?`<div class="fulltext" style="margin-top:30px">${fmtBody(w.body)}</div>`:`<p class="notice" style="margin-top:24px">The complete document is hosted in this archive.</p>`}</div>
-      ${w.pdf?`<div class="btnrow"><a class="btn" href="${w.pdf}" target="_blank" rel="noopener">Read the PDF</a><a class="btn ghost" href="${w.pdf}" download>Download</a></div>`:''}
+      ${w.pdf?`<div class="btnrow"><a class="btn" href="${w.pdf}" target="_blank" rel="noopener">View as PDF</a><a class="btn ghost" href="${w.pdf}" download>Download</a></div>`:''}
       ${shareBlock('/writings/'+w.slug,w.title)}
       ${mlCompact('writing:'+w.slug)}</div></section>`;}
   return `<section class="band"><div class="wrap"><div class="kick">THE WRITINGS · EVERY DOCUMENT HOSTED, EACH WITH ITS SUMMARY</div><h2 class="sec">The Writings</h2>
