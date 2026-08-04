@@ -3,6 +3,26 @@ const SITE = "https://dewgrave.com";
 const DEF = SECTION_META["/"];
 const ESC = s => (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 const ALL_WORKS_NAV = `<nav aria-label="All works" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0"><h2>Archive index</h2>`+Object.keys(SECTION_META).filter(k=>k.startsWith("/art/")||k.startsWith("/writings/")).map(k=>`<a href="${k}">${ESC(SECTION_META[k].t||k)}</a>`).join("")+`</nav>`;
+async function archiveNav(env){
+  // Build the hidden "Archive index" of every published work straight from D1 so
+  // it always mirrors the sitemap and no /art, /writings, or /blog page is orphaned.
+  try{
+    if(env.DB){
+      const q = async (sql)=> (await env.DB.prepare(sql).all()).results || [];
+      const art = await q("SELECT slug,title FROM art WHERE published=1 AND nsfw=0 ORDER BY sort");
+      const wr  = await q("SELECT slug,title FROM writings WHERE published=1 ORDER BY sort");
+      const po  = await q("SELECT slug,title FROM posts WHERE published=1 ORDER BY date DESC");
+      const links = [].concat(
+        art.map(a=>`<a href="/art/${a.slug}">${ESC(a.title||a.slug)}</a>`),
+        wr.map(w=>`<a href="/writings/${w.slug}">${ESC(w.title||w.slug)}</a>`),
+        po.map(p=>`<a href="/blog/${p.slug}">${ESC(p.title||p.slug)}</a>`)
+      ).join("");
+      if(links) return `<nav aria-label="All works" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0"><h2>Archive index</h2>${links}</nav>`;
+    }
+  }catch(e){}
+  return ALL_WORKS_NAV;
+}
+
 const J = (o,s)=>new Response(JSON.stringify(o),{status:s||200,headers:{"Content-Type":"application/json","Cache-Control":"no-store"}});
 const ASSET_RE = /\.(webp|png|jpg|jpeg|svg|pdf|ico|css|js|txt|xml|woff2?|json|map)$/i;
 
@@ -426,7 +446,7 @@ export default {
     let html=await shell.text();
     html=html.replace("<!--OG_HEAD-->", ogHead(p==="" ? "/" : (p.replace(/\/$/,"")||"/"), im));
     if(request.method==="GET"){ const pv=logView(env,request,p); if(ctx&&ctx.waitUntil) ctx.waitUntil(pv); }
-    html=html.replace("</body>", ALL_WORKS_NAV+"</body>");
+    html=html.replace("</body>", (await archiveNav(env))+"</body>");
     return new Response(html,{headers:{"Content-Type":"text/html; charset=utf-8","Cache-Control":"no-cache"}});
   }
 };
