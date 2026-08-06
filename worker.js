@@ -347,7 +347,7 @@ async function pdfFromDB(env, slug){
   if(!row||!row.pdf_blob) return null;
   const bin=unb64url(String(row.pdf_blob).replace(/^data:[^,]+,/,""));
   const bytes=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
-  return new Response(bytes,{headers:{"Content-Type":"application/pdf","Cache-Control":"public, max-age=300","Content-Disposition":"inline"}});
+  return new Response(bytes,{headers:{"Content-Type":"application/pdf","Cache-Control":"public, max-age=0, must-revalidate","Content-Disposition":"inline"}});
 }
 
 /* ---------- sitemap ---------- */
