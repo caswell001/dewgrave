@@ -3,7 +3,14 @@ const SITE = "https://dewgrave.com";
 const DEF = SECTION_META["/"];
 const ESC = s => (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 const ALL_WORKS_NAV = `<nav aria-label="All works" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0"><h2>Archive index</h2>`+Object.keys(SECTION_META).filter(k=>k.startsWith("/art/")||k.startsWith("/writings/")).map(k=>`<a href="${k}">${ESC(SECTION_META[k].t||k)}</a>`).join("")+`</nav>`;
+let _navCache=null,_navAt=0;
 async function archiveNav(env){
+  const _now=Date.now();
+  if(_navCache&&(_now-_navAt)<300000) return _navCache;
+  const _v=await _archiveNavRaw(env);
+  _navCache=_v; _navAt=_now; return _v;
+}
+async function _archiveNavRaw(env){
   // Build the hidden "Archive index" of every published work straight from D1 so
   // it always mirrors the sitemap and no /art, /writings, or /blog page is orphaned.
   try{
@@ -447,6 +454,6 @@ export default {
     html=html.replace("<!--OG_HEAD-->", ogHead(p==="" ? "/" : (p.replace(/\/$/,"")||"/"), im));
     if(request.method==="GET"){ const pv=logView(env,request,p); if(ctx&&ctx.waitUntil) ctx.waitUntil(pv); }
     html=html.replace("</body>", (await archiveNav(env))+"</body>");
-    return new Response(html,{headers:{"Content-Type":"text/html; charset=utf-8","Cache-Control":"no-cache"}});
+    return new Response(html,{headers:{"Content-Type":"text/html; charset=utf-8","Cache-Control":"public, max-age=300, s-maxage=86400"}});
   }
 };
