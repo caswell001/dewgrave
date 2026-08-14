@@ -448,7 +448,13 @@ export default {
       return res;
     }
     // page route -> SSR meta + JSON-LD
-    const im=await itemMeta(env, p.replace(/\/$/,"")||"/");
+    const _np=p.replace(/\/$/,"")||"/";
+    const im=await itemMeta(env, _np);
+    if(/^\/(art|writings|blog)\/[a-z0-9-]+$/.test(_np) && !im){
+      const s404=await env.ASSETS.fetch(new URL("/index.html", url.origin));
+      const h404=(await s404.text()).replace("<!--OG_HEAD-->", '<meta name="robots" content="noindex"><title>Not found | DEWGRAVE</title>');
+      return new Response(h404,{status:404,headers:{"Content-Type":"text/html; charset=utf-8"}});
+    }
     const shell=await env.ASSETS.fetch(new URL("/index.html", url.origin));
     let html=await shell.text();
     html=html.replace("<!--OG_HEAD-->", ogHead(p==="" ? "/" : (p.replace(/\/$/,"")||"/"), im));
