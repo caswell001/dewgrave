@@ -262,7 +262,7 @@ async function adminApi(request, env, sub){
     const {type, record}=body; if(!TABLES[type]||!record) return J({ok:false,error:"Bad request."},400);
     try{ await saveRecord(env, type, record); return J({ok:true}); }catch(e){ return J({ok:false,error:String(e.message||e)},500); }
   }
-  if(sub==="delete"){
+  if(sub==='clearpdf'){const s=body.slug;if(body.type==='writings'&&s){await env.DB.prepare('UPDATE writings SET pdf_blob=NULL, updated_at=? WHERE slug=?').bind(new Date().toISOString(),s).run();return J({ok:true});}return J({ok:false,error:'Bad request.'},400);}if(sub==="delete"){
     const {type, id}=body; if(!TABLES[type]) return J({ok:false,error:"Bad request."},400);
     const keycol = type==="events" ? "id" : (type==="settings" ? "key" : "slug");
     try{ await env.DB.prepare(`DELETE FROM ${TABLES[type]} WHERE ${keycol}=?`).bind(id).run(); return J({ok:true}); }catch(e){ return J({ok:false,error:String(e.message)},500); }
