@@ -27,3 +27,7 @@ database_id = "bb4ada8e-6ae1-47a9-a56e-181755a114ec"
 # Optional vars (were set on the old Pages project — re-add if used):
 #   ADMIN_EMAILS (allowed admin login emails), CF_ANALYTICS_TOKEN, CF_ZONE_ID
 # Without these: the public site + subscribe(->D1) work; admin OTP login + emails are down until set.
+
+[vars]
+ACCESS_TEAM_DOMAIN = "silent-recipe-9674.cloudflareaccess.com"
+ACCESS_AUD = "89592c3ea9cc01303a6f0a3342f4e2492498ae6fbc4abb4696f5df2eeeecdad4"

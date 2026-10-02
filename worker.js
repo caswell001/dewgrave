@@ -85,37 +85,63 @@ function emailAllowed(env, email){
   return list.includes(email);
 }
 async function requireAdmin(request, env){
-  // Auth is the HMAC-signed dg_admin cookie issued only after a verified email code.
-  // (We do NOT trust CF_Authorization / Access headers here: Access no longer fronts
-  //  this app, so an unverified JWT could be forged.)
-  return verifyToken(env, getCookie(request,"dg_admin"));
+  // Auth is Cloudflare Access (Google). Access fronts /admin and /api/admin and
+  // injects a signed JWT in Cf-Access-Jwt-Assertion; we validate it here. The
+  // Resend email-code login was removed in favour of Google-only Access login.
+  return !!(await verifyAccessIdentity(request, env));
 }
 
-/* ---------- email-code login ----------
-   Sends a 6-digit code with NO clickable link, so email link-scanners/prefetchers
-   cannot silently redeem it (the failure mode that broke Cloudflare Access OTP). */
-function genCode(){ return String(crypto.getRandomValues(new Uint32Array(1))[0] % 1000000).padStart(6,"0"); }
-function codeHash(env, email, code){ return hmac(env.ADMIN_SECRET||"", email+":"+code); }
-async function ensureCodesTable(env){ await env.DB.prepare("CREATE TABLE IF NOT EXISTS admin_codes (email TEXT PRIMARY KEY, code_hash TEXT, exp INTEGER, tries INTEGER)").run(); }
-async function sendLoginCode(env, email, code){
-  if(!env.RESEND_API_KEY || !env.RESEND_FROM) return {ok:false, error:"not_configured"};
-  const html = `<div style="font-family:Georgia,serif;max-width:480px;margin:24px auto;color:#171310">`
-    + `<p style="font-family:monospace;letter-spacing:.2em;color:#0c5a57;margin:0 0 4px">DEWGRAVE &middot; ADMIN</p>`
-    + `<p style="margin:0 0 6px">Your sign-in code is:</p>`
-    + `<p style="font-family:monospace;font-size:36px;letter-spacing:.35em;font-weight:bold;margin:0 0 14px">${code}</p>`
-    + `<p style="color:#4a4136;margin:0">Type this code on the admin sign-in page. It expires in 10 minutes. If you didn't request it, ignore this email.</p></div>`;
+let _accessCerts = null, _accessCertsExp = 0;
+async function getAccessCerts(env){
+  const now = Date.now();
+  if(_accessCerts && now < _accessCertsExp) return _accessCerts;
+  const team = env.ACCESS_TEAM_DOMAIN;
+  if(!team) return _accessCerts;
   try{
-    const r = await fetch("https://api.resend.com/emails",{method:"POST",
-      headers:{"Authorization":"Bearer "+env.RESEND_API_KEY,"Content-Type":"application/json"},
-      body:JSON.stringify({from:env.RESEND_FROM,to:email,subject:`Your Dewgrave admin code: ${code}`,
-        html, text:`Your Dewgrave admin sign-in code is ${code}. It expires in 10 minutes.`})});
-    if(r.ok) return {ok:true};
-    let detail=""; try{ detail=(await r.text()).slice(0,300); }catch(e){}
-    let domains=""; try{ const d=await fetch("https://api.resend.com/domains",{headers:{"Authorization":"Bearer "+env.RESEND_API_KEY}}); if(d.ok){ const dj=await d.json(); domains=(dj.data||[]).map(x=>x.name+":"+(x.status||"?")).join(", "); } }catch(e){}
-    return {ok:false, error:(detail||("Resend HTTP "+r.status)) + (domains?(" | your verified domains: "+domains):"")};
-  }catch(e){ return {ok:false, error:String(e&&e.message||e)}; }
+    const r = await fetch("https://"+team+"/cdn-cgi/access/certs");
+    if(!r.ok) return _accessCerts;
+    const j = await r.json();
+    _accessCerts = j.keys || [];
+    _accessCertsExp = now + 3600*1000;
+    return _accessCerts;
+  }catch(e){ return _accessCerts; }
 }
-
+function accessB64urlBytes(s){
+  s = s.replace(/-/g,"+").replace(/_/g,"/");
+  while(s.length % 4) s += "=";
+  const bin = atob(s), out = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+async function verifyAccessIdentity(request, env){
+  const token = request.headers.get("Cf-Access-Jwt-Assertion");
+  if(!token || !env.ACCESS_AUD) return null;
+  const parts = token.split(".");
+  if(parts.length !== 3) return null;
+  let header, payload;
+  try{
+    header = JSON.parse(new TextDecoder().decode(accessB64urlBytes(parts[0])));
+    payload = JSON.parse(new TextDecoder().decode(accessB64urlBytes(parts[1])));
+  }catch(e){ return null; }
+  const aud = payload.aud;
+  const audOk = Array.isArray(aud) ? aud.includes(env.ACCESS_AUD) : aud === env.ACCESS_AUD;
+  if(!audOk) return null;
+  const now = Math.floor(Date.now()/1000);
+  if(payload.exp && now >= payload.exp) return null;
+  if(payload.nbf && now < payload.nbf - 60) return null;
+  const certs = await getAccessCerts(env);
+  if(!certs || !certs.length) return null;
+  const jwk = certs.find(k => k.kid === header.kid) || certs[0];
+  let ok = false;
+  try{
+    const key = await crypto.subtle.importKey("jwk", jwk, {name:"RSASSA-PKCS1-v1_5", hash:"SHA-256"}, false, ["verify"]);
+    ok = await crypto.subtle.verify("RSASSA-PKCS1-v1_5", key, accessB64urlBytes(parts[2]), enc.encode(parts[0]+"."+parts[1]));
+  }catch(e){ ok = false; }
+  if(!ok) return null;
+  const email = (payload.email||"").toLowerCase();
+  if(!emailAllowed(env, email)) return null;
+  return email;
+}
 /* ---------- content ---------- */
 async function loadContent(env){
   if(!env.DB) return null;
@@ -242,35 +268,6 @@ async function adminApi(request, env, sub){
   const ok = await requireAdmin(request, env);
   if(sub==="logout") return new Response(JSON.stringify({ok:true}),{status:200,headers:{"Content-Type":"application/json","Set-Cookie":"dg_admin=; Path=/; HttpOnly; Secure; Max-Age=0"}});
   if(sub==="me") return J({ok, configured: !!(env.DB && env.ADMIN_SECRET)});
-  if(sub==="request-code"){
-    let b={}; try{b=await request.json();}catch(e){}
-    const email=(b.email||"").trim().toLowerCase();
-    if(!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return J({ok:false,error:"Enter a valid email."},400);
-    if(!env.ADMIN_SECRET) return J({ok:false,error:"Admin not configured (missing ADMIN_SECRET)."},503);
-    if(!env.DB) return J({ok:false,error:"No database bound."},503);
-    if(!emailAllowed(env,email)) return J({ok:false,error:"That email is not on the admin list."},403);
-    if(!env.RESEND_API_KEY || !env.RESEND_FROM) return J({ok:false,error:"Email sending isn't configured (set RESEND_API_KEY and RESEND_FROM)."},503);
-    const code=genCode(), h=await codeHash(env,email,code), exp=Date.now()+10*60*1000;
-    try{ await ensureCodesTable(env); await env.DB.prepare("INSERT OR REPLACE INTO admin_codes (email,code_hash,exp,tries) VALUES (?,?,?,0)").bind(email,h,exp).run(); }catch(e){ return J({ok:false,error:"Could not store code."},500); }
-    const sent=await sendLoginCode(env,email,code);
-    if(!sent.ok) return J({ok:false,error:"Email could not be sent. "+(sent.error||"")},502);
-    return J({ok:true});
-  }
-  if(sub==="verify-code"){
-    let b={}; try{b=await request.json();}catch(e){}
-    const email=(b.email||"").trim().toLowerCase(), code=(b.code||"").trim();
-    if(!email || !/^\d{6}$/.test(code)) return J({ok:false,error:"Enter the 6-digit code."},400);
-    if(!env.DB || !env.ADMIN_SECRET) return J({ok:false,error:"Admin not configured."},503);
-    if(!emailAllowed(env,email)) return J({ok:false,error:"That email is not on the admin list."},403);
-    let row=null; try{ await ensureCodesTable(env); row=await env.DB.prepare("SELECT code_hash,exp,tries FROM admin_codes WHERE email=?").bind(email).first(); }catch(e){}
-    if(!row) return J({ok:false,error:"No code found, request a new one."},400);
-    if(row.exp < Date.now()){ await env.DB.prepare("DELETE FROM admin_codes WHERE email=?").bind(email).run(); return J({ok:false,error:"Code expired, request a new one."},400); }
-    if((row.tries|0) >= 5){ await env.DB.prepare("DELETE FROM admin_codes WHERE email=?").bind(email).run(); return J({ok:false,error:"Too many attempts, request a new code."},429); }
-    if(await codeHash(env,email,code) !== row.code_hash){ await env.DB.prepare("UPDATE admin_codes SET tries=tries+1 WHERE email=?").bind(email).run(); return J({ok:false,error:"Incorrect code."},401); }
-    await env.DB.prepare("DELETE FROM admin_codes WHERE email=?").bind(email).run();
-    const token=await makeToken(env);
-    return new Response(JSON.stringify({ok:true}),{status:200,headers:{"Content-Type":"application/json","Set-Cookie":`dg_admin=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=604800`}});
-  }
   if(!ok) return J({ok:false,error:"Not authorised."},401);
   if(!env.DB) return J({ok:false,error:"No database bound."},503);
   let body={}; try{ body=await request.json(); }catch(e){}
