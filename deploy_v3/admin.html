@@ -75,7 +75,7 @@ function renderLogin(notConfigured){
   $("#cd").onkeydown=e=>{if(e.key==="Enter")verify();};
   $("#startOver").onclick=()=>location.reload();
 }
-$("#logout").onclick=async()=>{ await api("logout"); location.reload(); };
+$("#logout").onclick=()=>{ location.href="/cdn-cgi/access/logout"; };
 async function loadAll(){ const r=await api("list"); if(r.ok){DATA=r.content;} }
 function setTab(t){TAB=t;renderTabs();}
 function renderTabs(){
