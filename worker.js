@@ -160,7 +160,7 @@ async function itemMeta(env, path){
   const m = path.match(/^\/(art|writings|blog)\/([a-z0-9-]+)$/);
   if(!m) return null;
   if(m[1]==="art"){
-    const r = await env.DB.prepare("SELECT slug,title,summary,nsfw FROM art WHERE slug=? AND published=1").bind(m[2]).first();
+    const r = await env.DB.prepare("SELECT slug,title,summary,nsfw,for_sale,print_url,print_price FROM art WHERE slug=? AND published=1").bind(m[2]).first();
     if(r) return {t:r.title+", DEWGRAVE", d:clampDesc(r.summary), i:"/og/art-"+r.slug+".png", type:"art", row:r};
   } else if(m[1]==="writings"){
     const r = await env.DB.prepare("SELECT slug,title,summary,kind FROM writings WHERE slug=? AND published=1").bind(m[2]).first();
@@ -180,11 +180,13 @@ function jsonld(path, im){
   if(im && im.type==="art"){
     blocks.push({"@context":"https://schema.org","@type":"VisualArtwork","name":im.row.title,"creator":{"@type":"Person","name":"Will Dewgrave"},
       "artform":"Ink drawing","url":SITE+path,"image":SITE+"/art/full/"+im.row.slug+".webp","description":im.row.summary,"isFamilyFriendly":!im.row.nsfw});
-    blocks.push({"@context":"https://schema.org","@type":"Product"/*SCS-PRODUCT*/,"name":im.row.title,"image":SITE+"/art/full/"+im.row.slug+".webp","description":im.row.summary,"url":SITE+path,"brand":{"@type":"Brand","name":"DEWGRAVE"},"category":"Art print"});
+    if(im.row.for_sale && im.row.print_price){
+      const _p=String(im.row.print_price).replace(/[^0-9.]/g,"");
+      if(_p) blocks.push({"@context":"https://schema.org","@type":"Product"/*SCS-PRODUCT*/,"name":im.row.title,"image":SITE+"/art/full/"+im.row.slug+".webp","description":im.row.summary,"url":SITE+path,"brand":{"@type":"Brand","name":"DEWGRAVE"},"category":"Art print","offers":{"@type":"Offer","price":_p,"priceCurrency":"CAD","availability":"https://schema.org/InStock","url":im.row.print_url||(SITE+path)}});
+    }
   } else if(im && im.type==="writing"){
     blocks.push({"@context":"https://schema.org","@type":"Book","name":im.row.title,"author":{"@type":"Person","name":"Will Dewgrave"},
       "url":SITE+path,"description":im.row.summary,"bookFormat":"https://schema.org/EBook"});
-    blocks.push({"@context":"https://schema.org","@type":"Product"/*SCS-PRODUCT*/,"name":im.row.title,"image":SITE+im.i,"description":im.row.summary,"url":SITE+path,"brand":{"@type":"Brand","name":"DEWGRAVE"},"category":"Book"});
   } else if(im && im.type==="post"){
     blocks.push({"@context":"https://schema.org","@type":"BlogPosting","headline":im.row.title,"author":{"@type":"Person","name":"Will Dewgrave"},
       "url":SITE+path,"datePublished":im.row.date,"description":im.row.excerpt,"publisher":{"@type":"Organization","name":"DEWGRAVE"}});
