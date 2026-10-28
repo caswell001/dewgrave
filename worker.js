@@ -155,19 +155,31 @@ async function loadContent(env){
   return {art, writings, events, posts, settings};
 }
 
+// Cap the <title>/og:title at ~60 chars so Google doesn't rewrite it in the SERP
+// ("Page and SERP titles do not match"). The full title still renders as the H1.
+function titleTag(fullTitle){
+  const BRAND=", DEWGRAVE", MAX=60;
+  let s=String(fullTitle||"").trim();
+  if((s+BRAND).length<=MAX) return s+BRAND;
+  const room=MAX-BRAND.length-1;            // leave space for the ellipsis
+  let cut=s.slice(0,room);
+  const sp=cut.lastIndexOf(" ");
+  if(sp>room-16) cut=cut.slice(0,sp);        // prefer a word boundary
+  return cut.trim()+"\u2026"+BRAND;
+}
 async function itemMeta(env, path){
   if(!env.DB) return null;
   const m = path.match(/^\/(art|writings|blog)\/([a-z0-9-]+)$/);
   if(!m) return null;
   if(m[1]==="art"){
     const r = await env.DB.prepare("SELECT slug,title,summary,nsfw,for_sale,print_url,print_price FROM art WHERE slug=? AND published=1").bind(m[2]).first();
-    if(r) return {t:r.title+", DEWGRAVE", d:clampDesc(r.summary), i:"/og/art-"+r.slug+".png", type:"art", row:r};
+    if(r) return {t:titleTag(r.title), d:clampDesc(r.summary), i:"/og/art-"+r.slug+".png", type:"art", row:r};
   } else if(m[1]==="writings"){
     const r = await env.DB.prepare("SELECT slug,title,summary,kind FROM writings WHERE slug=? AND published=1").bind(m[2]).first();
-    if(r) return {t:r.title+", DEWGRAVE", d:clampDesc(r.summary), i:"/og/writing-"+r.slug+".png", type:"writing", row:r};
+    if(r) return {t:titleTag(r.title), d:clampDesc(r.summary), i:"/og/writing-"+r.slug+".png", type:"writing", row:r};
   } else if(m[1]==="blog"){
     const r = await env.DB.prepare("SELECT slug,title,excerpt,date,body FROM posts WHERE slug=? AND published=1").bind(m[2]).first();
-    if(r) return {t:r.title+", DEWGRAVE", d:clampDesc((r.excerpt||"")+" "+(r.body||"")), i:"/og/section-blog.png", type:"post", row:r};
+    if(r) return {t:titleTag(r.title), d:clampDesc((r.excerpt||"")+" "+(r.body||"")), i:"/og/section-blog.png", type:"post", row:r};
   }
   return null;
 }
