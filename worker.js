@@ -194,7 +194,7 @@ function jsonld(path, im){
       "artform":"Ink drawing","url":SITE+path,"image":SITE+"/art/full/"+im.row.slug+".webp","description":im.row.summary,"isFamilyFriendly":!im.row.nsfw});
     if(im.row.for_sale && im.row.print_price){
       const _p=String(im.row.print_price).replace(/[^0-9.]/g,"");
-      if(_p) blocks.push({"@context":"https://schema.org","@type":"Product"/*SCS-PRODUCT*/,"name":im.row.title,"image":SITE+"/art/full/"+im.row.slug+".webp","description":im.row.summary,"url":SITE+path,"brand":{"@type":"Brand","name":"DEWGRAVE"},"category":"Art print","offers":{"@type":"Offer","price":_p,"priceCurrency":"CAD","availability":"https://schema.org/InStock","url":im.row.print_url||(SITE+path)}});
+      if(_p) blocks.push({"@context":"https://schema.org","@type":"Product","name":im.row.title,"image":SITE+"/art/full/"+im.row.slug+".webp","description":im.row.summary,"url":SITE+path,"brand":{"@type":"Brand","name":"DEWGRAVE"},"category":"Art print","offers":{"@type":"Offer","price":_p,"priceCurrency":"CAD","availability":"https://schema.org/InStock","url":im.row.print_url||(SITE+path)}});
     }
   } else if(im && im.type==="writing"){
     blocks.push({"@context":"https://schema.org","@type":"Book","name":im.row.title,"author":{"@type":"Person","name":"Will Dewgrave"},
