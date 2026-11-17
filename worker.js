@@ -173,7 +173,7 @@ async function itemMeta(env, path){
   if(!m) return null;
   if(m[1]==="art"){
     const r = await env.DB.prepare("SELECT slug,title,summary,nsfw,for_sale,print_url,print_price FROM art WHERE slug=? AND published=1").bind(m[2]).first();
-    if(r) return {t:titleTag(r.title), d:clampDesc(r.summary), i:"/og/art-"+r.slug+".png", type:"art", row:r};
+    if(r) return {t:titleTag(r.title+" \u2014 original ink drawing"), d:clampDesc(r.summary), i:"/og/art-"+r.slug+".png", type:"art", row:r};
   } else if(m[1]==="writings"){
     const r = await env.DB.prepare("SELECT slug,title,summary,kind FROM writings WHERE slug=? AND published=1").bind(m[2]).first();
     if(r) return {t:titleTag(r.title), d:clampDesc(r.summary), i:"/og/writing-"+r.slug+".png", type:"writing", row:r};
@@ -188,7 +188,7 @@ function jsonld(path, im){
   const blocks = [];
   blocks.push({"@context":"https://schema.org","@type":"WebSite","name":"DEWGRAVE","url":SITE,"description":DEF.d,
     "potentialAction":{"@type":"SearchAction","target":SITE+"/gallery?q={q}","query-input":"required name=q"}});
-  blocks.push({"@context":"https://schema.org","@type":"Organization","name":"DEWGRAVE","url":SITE,"logo":SITE+"/og/section-home.png","founder":{"@type":"Person","name":"Will Dewgrave"}});
+  blocks.push({"@context":"https://schema.org","@type":"Organization","name":"DEWGRAVE","url":SITE,"logo":SITE+"/og/section-home.png","description":"DEWGRAVE is the archive of Will Dewgrave \u2014 fifty-three ink works and four books, every document and art piece hosted and summarised.","founder":{"@type":"Person","name":"Will Dewgrave"}});
   if(im && im.type==="art"){
     blocks.push({"@context":"https://schema.org","@type":"VisualArtwork","name":im.row.title,"creator":{"@type":"Person","name":"Will Dewgrave"},
       "artform":"Ink drawing","url":SITE+path,"image":SITE+"/art/full/"+im.row.slug+".webp","description":im.row.summary,"isFamilyFriendly":!im.row.nsfw});
@@ -452,6 +452,21 @@ async function cfHistory(env){
   }catch(e){ return {configured:true,error:String(e&&e.message||e)}; }
 }
 
+async function categoryItemList(env, path){
+  if(!env || !env.DB) return "";
+  try{
+    let rows=null, name=null, base=null;
+    if(path==="/gallery"){ rows=(await env.DB.prepare("SELECT slug,title FROM art WHERE published=1 ORDER BY sort").all()).results; name="The Gallery"; base="/art/"; }
+    else if(path==="/prints"){ rows=(await env.DB.prepare("SELECT slug,title FROM art WHERE published=1 ORDER BY sort").all()).results; name="Prints"; base="/art/"; }
+    else if(path==="/writings"){ rows=(await env.DB.prepare("SELECT slug,title FROM writings WHERE published=1 ORDER BY slug").all()).results; name="The Writings"; base="/writings/"; }
+    else return "";
+    if(!rows || !rows.length) return "";
+    const el=rows.map((r,i)=>({"@type":"ListItem","position":i+1,"url":SITE+base+r.slug,"name":r.title}));
+    const block={"@context":"https://schema.org","@type":"ItemList","name":name,"numberOfItems":el.length,"itemListElement":el};
+    return `<script type="application/ld+json">${JSON.stringify(block)}</script>`;
+  }catch(e){ return ""; }
+}
+
 async function handle(request, env, ctx){
     const url=new URL(request.url), p=url.pathname;
     if(p==="/sitemap.xml") return sitemap(env);
@@ -488,6 +503,7 @@ async function handle(request, env, ctx){
     const shell=await env.ASSETS.fetch(new URL("/index.html", url.origin));
     let html=await shell.text();
     html=html.replace("<!--OG_HEAD-->", ogHead(p==="" ? "/" : (p.replace(/\/$/,"")||"/"), im));
+    { const _cl=await categoryItemList(env, (p.replace(/\/$/,"")||"/")); if(_cl) html=html.replace("</head>", _cl+"</head>"); }
     if(request.method==="GET"){ const pv=logView(env,request,p); if(ctx&&ctx.waitUntil) ctx.waitUntil(pv); }
     html=html.replace('<main id="app"></main>', '<main id="app">'+ssrH1(p==="" ? "/" : (p.replace(/\/$/,"")||"/"), im)+'</main>');
     html=html.replace("</body>", (await archiveNav(env))+"</body>");
