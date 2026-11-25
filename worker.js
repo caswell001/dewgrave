@@ -469,6 +469,7 @@ async function categoryItemList(env, path){
 
 async function handle(request, env, ctx){
     const url=new URL(request.url), p=url.pathname;
+    if(p==="/c1a43e6452ab4c17ac161607521921f6.txt") return new Response("c1a43e6452ab4c17ac161607521921f6",{headers:{"content-type":"text/plain; charset=utf-8"}});
     if(p==="/sitemap.xml") return sitemap(env);
     if(p.startsWith("/api/admin/")) return adminApi(request, env, p.slice("/api/admin/".length));
     if(p==="/api/content"){
