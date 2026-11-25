@@ -14,3 +14,7 @@ jobs:
           accountId: 04277c34732738e0fade317b9c6baa63
           wranglerVersion: "4.118.0"
           command: deploy
+      - name: Ping IndexNow
+        if: success()
+        run: node indexnow.mjs
+
